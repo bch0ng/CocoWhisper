@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.FXMLController">
+    <AnchorPane>
+            <VBox>
+                <ToolBar>
+                    <HBox fx:id="titlebar">
+                        <Button styleClass="toolbar-button" fx:id="closeButton" cancelButton="true" mnemonicParsing="false" onAction="#handleCloseButtonAction" />
+                        <Button styleClass="toolbar-button" fx:id="minimizeButton" mnemonicParsing="false" onAction="#handleMinimizeButtonAction" />
+                        <Button styleClass="toolbar-button" fx:id="resizeButton" mnemonicParsing="false" onAction="#handleMinimizeButtonAction"/>
+                    </HBox>
+                </ToolBar>
+                <HBox fx:id="content">
+                    <VBox fx:id="nav">
+                        <Button />
+                        <Button />
+                        <Button />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <Button />
+                        <Button />
+                    </VBox>
+                </HBox>
+            </VBox>
+    </AnchorPane>
+</VBox>

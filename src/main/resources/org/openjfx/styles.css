@@ -1,0 +1,23 @@
+.root {
+    -fx-background-radius: 5px;
+}
+.text-label {
+    -fx-text-fill: blue;
+}
+.button {
+    -fx-font-weight: bold;
+}
+
+ToolBar, .toolbar-button {
+    -fx-background-color: transparent;
+}
+.tool-bar #titlebar {
+    -fx-spacing: 5px;
+}
+.toolbar-button,
+.toolbar-button > graphic > image {
+    -fx-min-height: 16px;
+    -fx-min-width: 16px;
+    -fx-max-height: 16px;
+    -fx-max-width: 16px;
+}
