@@ -16,8 +16,8 @@ public class FXMLController {
     // Size in pixels (px) for titlebar icons.
     private static final int TRAFFIC_LIGHT_ICONS_SIZE = 12;
 
-    // Stage given by MainApp.java
-    private Stage stage;
+    private Stage stage;        // Stage given by MainApp.java
+    private boolean isFocused;  // True if window is focused; else false
 
     // CSS ID's used in scene.fxml
     @FXML
@@ -92,10 +92,17 @@ public class FXMLController {
             @Override
             public void handle(MouseEvent t)
             {
-                setDefaultTitlebarIcons(closeImageView, minimizeImageView, resizeImageView, getClass()
-                        .getResource("images/titlebar_icons/small/small_red.png"), getClass()
-                                .getResource("images/titlebar_icons/small/small_yellow.png"), getClass()
-                                        .getResource("images/titlebar_icons/small/small_green.png"));
+                if (isFocused) {
+                    setDefaultTitlebarIcons(closeImageView, minimizeImageView, resizeImageView, getClass()
+                            .getResource("images/titlebar_icons/small/small_red.png"), getClass()
+                            .getResource("images/titlebar_icons/small/small_yellow.png"), getClass()
+                            .getResource("images/titlebar_icons/small/small_green.png"));
+                } else {
+                    setDefaultTitlebarIcons(closeImageView, minimizeImageView, resizeImageView, getClass()
+                            .getResource("images/titlebar_icons/small/small_unfocused.png"), getClass()
+                            .getResource("images/titlebar_icons/small/small_unfocused.png"), getClass()
+                            .getResource("images/titlebar_icons/small/small_unfocused.png"));
+                }
             }
         });
         closeButton.setOnMousePressed((MouseEvent e) ->
@@ -122,6 +129,7 @@ public class FXMLController {
         ImageView minimizeImageView = new ImageView();
         ImageView resizeImageView = new ImageView();
         stage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            this.isFocused = isNowFocused;
             if (!isNowFocused) {
                 // Changing all three decorations to light gray
                 closeImageView.setImage(new Image(getClass()
