@@ -12,9 +12,9 @@ import org.jxmpp.jid.BareJid;
 
 public class Client {
     public static void main(String[] args) throws XMPPException, SmackException, IOException, InterruptedException {
+        Scanner in = new Scanner(System.in);
         while (true) {
             // Asking for Login Info
-            Scanner in = new Scanner(System.in);
             System.out.println("What is your username?");
             String username = in.next();
             System.out.println("What is your password?");
@@ -30,7 +30,7 @@ public class Client {
             boolean chatWithSelected = false;
             Chat chat = null;
             Collection<RosterEntry> allUsers = conn.roster();
-            HashMap<String, BareJid> users = new HashMap<String, BareJid>();
+            HashMap<String, BareJid> users = new HashMap<>();
             if (allUsers.isEmpty()) {
                 System.out.println("No users.");
             } else {
@@ -63,6 +63,7 @@ public class Client {
                     chat.send(input);
                 }
             }
+            break;
         }
     }
 }

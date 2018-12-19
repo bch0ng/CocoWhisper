@@ -20,21 +20,29 @@ import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class XMPPConnection  
 { 
     private AbstractXMPPConnection connection;
     private ChatManager chatManager;
     private Roster roster;
+    private Dotenv dotenv;
     
     public XMPPConnection(String username, String password) throws XMPPException, SmackException, IOException, InterruptedException
-    { 
+    {
+        // Loading in the project's environmental variables from .env file
+        dotenv = Dotenv.load();
+        // Setting the config options for connection to server
         XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
                 .setUsernameAndPassword(username, password)
-                .setXmppDomain("localhost")
-                .setHost("localhost")
-                .setSecurityMode(XMPPTCPConnectionConfiguration.SecurityMode.disabled)
-                .setPort(5222)
+                .setXmppDomain(dotenv.get("XMPP_DOMAIN"))
+                .setHost(dotenv.get("HOST"))
+                .setSecurityMode(
+                        dotenv.get("SECURITY_ENABLED").equals("true")
+                        ? XMPPTCPConnectionConfiguration.SecurityMode.required
+                        : XMPPTCPConnectionConfiguration.SecurityMode.disabled
+                ).setPort(Integer.parseInt(dotenv.get("PORT")))
                 .build();
 
           connection = new XMPPTCPConnection(config);
@@ -59,18 +67,19 @@ public class XMPPConnection
         }
         return roster.getEntries();
     }
-    
+
     public ChatManager getChatManager()
     {
         return chatManager;
     }
     
-    public Chat createChat(BareJid chatWith) throws Exception, XmppStringprepException
+    public Chat createChat(BareJid chatWith) throws Exception
     {
         chatManager.addIncomingListener(new IncomingChatMessageListener() {
             @Override
             public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
-                System.out.println("New message from " + from + ": " + message.getBody());
+                String jidString = from.toString();
+                System.out.println(jidString.substring(0, jidString.indexOf("@"))+ ": " + message.getBody());
             }
         });
         EntityBareJid jid = JidCreate.entityBareFrom(chatWith);
@@ -83,7 +92,7 @@ public class XMPPConnection
         return chat;
     }
     
-    public void disconnect() throws XMPPException, SmackException, IOException, InterruptedException
+    public void disconnect()
     {
         connection.disconnect();
     }
