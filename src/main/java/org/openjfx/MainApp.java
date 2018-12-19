@@ -28,7 +28,7 @@ public class MainApp extends Application {
             stage.setX(event.getScreenX() - xOffset);
             stage.setY(event.getScreenY() - yOffset);
         });
-        Scene scene = new Scene(root, 387, 660);
+        Scene scene = new Scene(root, 390, 660);
         // Sends stage to FXMLController.java and initializes
         // handling when the window unfocuses.
         ((FXMLController) loader.getController()).setStage(stage);

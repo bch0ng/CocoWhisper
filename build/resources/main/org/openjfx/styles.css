@@ -12,12 +12,12 @@ ToolBar, .toolbar-button {
     -fx-background-color: transparent;
 }
 .tool-bar #titlebar {
-    -fx-spacing: 5px;
+    -fx-spacing: 10px;
 }
 .toolbar-button,
 .toolbar-button > graphic > image {
-    -fx-min-height: 16px;
-    -fx-min-width: 16px;
-    -fx-max-height: 16px;
-    -fx-max-width: 16px;
+    -fx-min-height: 12px;
+    -fx-min-width: 12px;
+    -fx-max-height: 12px;
+    -fx-max-width: 12px;
 }

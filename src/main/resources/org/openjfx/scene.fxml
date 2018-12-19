@@ -13,7 +13,7 @@
                 <HBox fx:id="titlebar">
                     <Button styleClass="toolbar-button" fx:id="closeButton" cancelButton="true" mnemonicParsing="false" onAction="#handleCloseButtonAction" />
                     <Button styleClass="toolbar-button" fx:id="minimizeButton" mnemonicParsing="false" onAction="#handleMinimizeButtonAction" />
-                    <Button styleClass="toolbar-button" fx:id="resizeButton" mnemonicParsing="false" onAction="#handleMinimizeButtonAction"/>
+                    <Button styleClass="toolbar-button" fx:id="resizeButton" mnemonicParsing="false" onAction="#handleResizeButtonAction"/>
                 </HBox>
             </ToolBar>
             <HBox fx:id="content">
