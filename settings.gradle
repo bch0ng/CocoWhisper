@@ -1,2 +1,5 @@
 rootProject.name = 'chattyB'
-
+include 'JavaFX'
+findProject(':JavaFX')?.name = 'javafx'
+include 'ChattyB'
+findProject(':ChattyB')?.name = 'chattyb'
