@@ -26,11 +26,12 @@ public class MainApp extends Application {
 
     public static void main(String[] args) throws Exception
     {
+        // For testing purposes
+        //Client c = new Client();
+        //c.main(args);
         //XMPPConnection x = new XMPPConnection("test1", "testing1234");
-        Client c = new Client();
-        c.main(args);
         //System.out.println("Success!");
-        //Application.launch(args);
+        Application.launch(args);
     }
 
 }
