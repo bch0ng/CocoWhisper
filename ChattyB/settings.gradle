@@ -1,4 +1,0 @@
-rootProject.name = 'chattyB'
-include 'JavaFX'
-findProject(':JavaFX')?.name = 'javafx'
-
