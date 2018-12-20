@@ -13,6 +13,7 @@
  *  #c3d5e5 : Kakao extra-light-blue
  */
 .root {
+    -fx-background-color: #fff;
     -fx-background-radius: 5px;
 }
 ToolBar,
@@ -30,6 +31,7 @@ Button.nav-item {
     -fx-max-height: 12px;
     -fx-max-width: 12px;
 }
+
 .left-pane {
     -fx-min-width: 60px;
     -fx-background-radius: 4px 0 0 4px;
@@ -110,4 +112,16 @@ Button.nav-item {
 }
 #navSecondary > Button.nav-item#settings:focused {
     -fx-background-image: url("images/nav_icons/cog_active.png");
+}
+
+#view .title{
+    -fx-label-padding: 15px;
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+}
+
+.separator {
+    -fx-background-color: transparent;
+    -fx-opacity: 0.3;
+
 }

@@ -1,11 +1,14 @@
 package org.openjfx;
 
+import client.ChattyXMPPConnection;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -14,7 +17,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.jivesoftware.smack.roster.RosterEntry;
+
 import java.net.URL;
+import java.util.Collection;
 
 public class FXMLController {
     // Size in pixels (px) for titlebar icons.
@@ -37,6 +43,7 @@ public class FXMLController {
     private boolean isMaximized;    // True if window is bordered fullscreen, else false
     private double oldWindowX;      // x-position of window on screen (in px)
     private double oldWindowY;      // y-position of window on screen (in px)
+    private ChattyXMPPConnection connection;
 
     // CSS ID's used in scene.fxml
     @FXML private HBox titlebar;
@@ -51,9 +58,16 @@ public class FXMLController {
     @FXML private BorderPane layout;
     @FXML private VBox test;
     @FXML private Button friends;
+    @FXML private VBox view;
 
     public void initialize() {
         this.isMaximized = false;
+        try {
+            connection = new ChattyXMPPConnection("test1", "testing1234");
+            System.out.println("worked!");
+        } catch (Exception e) {
+            System.out.println("oh no");
+        }
         this.createTitlebar();
     }
 
@@ -252,7 +266,8 @@ public class FXMLController {
 
     /**
      * Creates a reference to the stage
-     * from MainApp.java
+     * from MainApp.java and binds layout
+     * width and height to the stage width and height.
      *
      * @param stage application window
      */
@@ -269,5 +284,44 @@ public class FXMLController {
 
     public void doSomething() {
         System.out.println("Doing something");
+    }
+
+    public void viewFriendsList() {
+        view.getChildren().clear();
+        Label title = new Label();
+        title.getStyleClass().add("title");
+        try {
+            Collection<RosterEntry> friends = connection.roster();
+            title.setText("Friends " + friends.size());
+            view.getChildren().add(title);
+            view.getChildren().add(new Separator());
+            VBox friendsList = new VBox();
+            for (RosterEntry friend : friends) {
+                Button friendInfo = new Button();
+                friendInfo.setText(friend.getName());
+                friendsList.getChildren().add(friendInfo);
+            }
+            view.getChildren().add(friendsList);
+        } catch(Exception e) {
+            title.setText("Unable to display Friends :(");
+            view.getChildren().add(title);
+            e.printStackTrace();
+        }
+    }
+
+    public void viewChatList() {
+
+    }
+
+    public void viewMore() {
+
+    }
+
+    public void muteNotifications() {
+
+    }
+
+    public void viewSettings() {
+
     }
 }

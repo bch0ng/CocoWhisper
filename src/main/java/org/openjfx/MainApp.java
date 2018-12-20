@@ -48,7 +48,7 @@ public class MainApp extends Application {
         //c.main(args);
 
         // Connecting GUI to client package.
-        //XMPPConnection x = new XMPPConnection("test1", "testing1234");
+        //ChattyXMPPConnection x = new ChattyXMPPConnection("test1", "testing1234");
         //System.out.println("Success!");
         Application.launch(args);
     }

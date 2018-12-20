@@ -24,7 +24,7 @@ public class Client {
             String password = in.next();
             
             // Creates XMPP connection with given login information
-            XMPPConnection conn = new XMPPConnection(username, password);
+            ChattyXMPPConnection conn = new ChattyXMPPConnection(username, password);
             
             System.out.println("Successfully logged in!");
             
