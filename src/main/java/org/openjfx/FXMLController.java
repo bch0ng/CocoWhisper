@@ -1,5 +1,6 @@
 package org.openjfx;
 
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -8,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
@@ -37,20 +39,18 @@ public class FXMLController {
     private double oldWindowY;      // y-position of window on screen (in px)
 
     // CSS ID's used in scene.fxml
-    @FXML
-    private HBox titlebar;
-    @FXML
-    private Button closeButton;
-    @FXML
-    private Button minimizeButton;
-    @FXML
-    private Button resizeButton;
-    @FXML
-    private HBox content;
-    @FXML
-    private VBox nav;
-    @FXML
-    private VBox contacts;
+    @FXML private HBox titlebar;
+    @FXML private Button closeButton;
+    @FXML private Button minimizeButton;
+    @FXML private Button resizeButton;
+    @FXML private HBox content;
+    @FXML private VBox nav;
+    @FXML private VBox navMain;
+    @FXML private VBox navSecondary;
+    @FXML private VBox contacts;
+    @FXML private BorderPane layout;
+    @FXML private VBox test;
+    @FXML private Button friends;
 
     public void initialize() {
         this.isMaximized = false;
@@ -256,7 +256,18 @@ public class FXMLController {
      *
      * @param stage application window
      */
-    public void setStage(Stage stage){
+    public void setStage(Stage stage)
+    {
         this.stage = stage;
+        ReadOnlyDoubleProperty stageHeight = this.stage.heightProperty();
+        ReadOnlyDoubleProperty stageWidth = this.stage.widthProperty();
+        layout.prefHeightProperty().bind(stageHeight);
+        layout.prefWidthProperty().bind(stageWidth);
+        nav.prefHeightProperty().bind(stageHeight);
+        friends.requestFocus();
+    }
+
+    public void doSomething() {
+        System.out.println("Doing something");
     }
 }

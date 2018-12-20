@@ -6,9 +6,12 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.FXMLController">
-    <AnchorPane>
-        <VBox>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
+<BorderPane fx:id="layout" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.FXMLController">
+    <left>
+        <VBox fx:id="test" styleClass="left-pane">
             <ToolBar>
                 <HBox fx:id="titlebar">
                     <Button styleClass="toolbar-button" fx:id="closeButton" cancelButton="true" mnemonicParsing="false" onAction="#handleCloseButtonAction" />
@@ -16,16 +19,24 @@
                     <Button styleClass="toolbar-button" fx:id="resizeButton" mnemonicParsing="false" onAction="#handleResizeButtonAction"/>
                 </HBox>
             </ToolBar>
-            <HBox fx:id="content">
+            <HBox fx:id="content" alignment="CENTER">
                 <VBox fx:id="nav">
-                    <Button />
-                    <Button />
-                    <Button />
+                    <VBox fx:id="navMain" alignment="CENTER">
+                        <Button fx:id="friends" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
+                        <Button fx:id="chats" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
+                        <Button fx:id="more" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
+                    </VBox>
                     <Region VBox.vgrow="ALWAYS" />
-                    <Button />
-                    <Button />
+                    <VBox fx:id="navSecondary" alignment="CENTER">
+                        <Button fx:id="mute" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
+                        <Button fx:id="settings" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
+                    </VBox>
                 </VBox>
             </HBox>
+            <Pane VBox.vgrow="ALWAYS" />
         </VBox>
-    </AnchorPane>
-</VBox>
+    </left>
+    <center>
+        <Text>Hello world!</Text>
+    </center>
+</BorderPane>

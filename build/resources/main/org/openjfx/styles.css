@@ -1,14 +1,23 @@
+/** Kakao colors:
+ *  #403631 : Left panel dark-brown
+ *  #ec6652 : Notification icon red
+ *  #67c2ba : Notification banner teal
+ *  #ffffff : White
+ *  #252526 : Text black
+ *  #888888 : Text count + status dark-gray
+ *  #9d9e9e : Text friends gray
+ *  #f1f1f1 : Horizontal seperator light-gray
+ *  #f6e04c : Kakao yellow
+ *  #381f1f : Kakao red-brown
+ *  #89aecc : Kakao light-blue
+ *  #c3d5e5 : Kakao extra-light-blue
+ */
 .root {
     -fx-background-radius: 5px;
 }
-.text-label {
-    -fx-text-fill: blue;
-}
-.button {
-    -fx-font-weight: bold;
-}
-
-ToolBar, .toolbar-button {
+ToolBar,
+.toolbar-button,
+Button.nav-item {
     -fx-background-color: transparent;
 }
 .tool-bar #titlebar {
@@ -20,4 +29,85 @@ ToolBar, .toolbar-button {
     -fx-min-width: 12px;
     -fx-max-height: 12px;
     -fx-max-width: 12px;
+}
+.left-pane {
+    -fx-min-width: 60px;
+    -fx-background-radius: 4px 0 0 4px;
+    -fx-background-color: #403631;
+}
+.nav-item {
+    -fx-alignment: center;
+}
+/*
+ * Nav icons courtesy of FontAwesome (https://fontawesome.com/license)
+ */
+#nav {
+    -fx-padding: 30px 0 22px 0;
+}
+#navMain {
+    -fx-spacing: 35px;
+}
+#navSecondary {
+    -fx-spacing: 25px;
+}
+#navMain Button.nav-item {
+    -fx-min-width: 22px;
+    -fx-min-height: 22px;
+    -fx-max-width: 22px;
+    -fx-max-height: 22px;
+    -fx-background-size: 22px auto;
+    -fx-background-repeat: no-repeat;
+}
+#navSecondary Button.nav-item {
+    -fx-max-width: 15px;
+    -fx-min-height: 15px;
+    -fx-min-width: 15px;
+    -fx-max-height: 15px;
+    -fx-background-size: 14px auto;
+    -fx-background-repeat: no-repeat;
+}
+#navMain > Button.nav-item#friends {
+    -fx-background-image: url("images/nav_icons/user.png");
+}
+#navMain > Button.nav-item#friends:hover {
+    -fx-background-image: url("images/nav_icons/user_hover.png");
+}
+#navMain > Button.nav-item#friends:focused {
+    -fx-background-image: url("images/nav_icons/user_active.png");
+}
+#navMain > Button.nav-item#chats {
+    -fx-background-image: url("images/nav_icons/chat.png");
+}
+#navMain > Button.nav-item#chats:hover {
+    -fx-background-image: url("images/nav_icons/chat_hover.png");
+}
+#navMain > Button.nav-item#chats:focused {
+    -fx-background-image: url("images/nav_icons/chat_active.png");
+}
+#navMain > Button.nav-item#more {
+    -fx-background-image: url("images/nav_icons/more.png");
+}
+#navMain > Button.nav-item#more:hover {
+    -fx-background-image: url("images/nav_icons/more_hover.png");
+}
+#navMain > Button.nav-item#more:focused {
+    -fx-background-image: url("images/nav_icons/more_active.png");
+}
+#navSecondary > Button.nav-item#mute {
+    -fx-background-image: url("images/nav_icons/bell.png");
+}
+#navSecondary > Button.nav-item#mute:hover {
+    -fx-background-image: url("images/nav_icons/bell_hover.png");
+}
+#navSecondary > Button.nav-item#mute:focused {
+    -fx-background-image: url("images/nav_icons/mute.png");
+}
+#navSecondary > Button.nav-item#settings {
+    -fx-background-image: url("images/nav_icons/cog.png");
+}
+#navSecondary > Button.nav-item#settings:hover {
+    -fx-background-image: url("images/nav_icons/cog_hover.png");
+}
+#navSecondary > Button.nav-item#settings:focused {
+    -fx-background-image: url("images/nav_icons/cog_active.png");
 }
