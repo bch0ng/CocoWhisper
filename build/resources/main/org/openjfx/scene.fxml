@@ -10,36 +10,74 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<BorderPane fx:id="layout" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.FXMLController">
-    <left>
-        <VBox fx:id="test" styleClass="left-pane">
-            <ToolBar>
-                <HBox fx:id="titlebar">
-                    <Button styleClass="toolbar-button" fx:id="closeButton" cancelButton="true" mnemonicParsing="false" onAction="#handleCloseButtonAction" />
-                    <Button styleClass="toolbar-button" fx:id="minimizeButton" mnemonicParsing="false" onAction="#handleMinimizeButtonAction" />
-                    <Button styleClass="toolbar-button" fx:id="resizeButton" mnemonicParsing="false" onAction="#handleResizeButtonAction"/>
-                </HBox>
-            </ToolBar>
-            <HBox fx:id="content" alignment="CENTER">
-                <VBox fx:id="nav">
-                    <VBox fx:id="navMain" alignment="CENTER">
-                        <Button fx:id="friends" styleClass="nav-item" mnemonicParsing="false" onAction="#viewFriendsList" />
-                        <Button fx:id="chats" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
-                        <Button fx:id="more" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
-                    </VBox>
-                    <Region VBox.vgrow="ALWAYS" />
-                    <VBox fx:id="navSecondary" alignment="CENTER">
-                        <Button fx:id="mute" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
-                        <Button fx:id="settings" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
-                    </VBox>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.PasswordField?>
+<StackPane fx:id="testing" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.FXMLController">
+        <BorderPane fx:id="titleCont">
+            <top>
+                <ToolBar fx:id="toolbar">
+                    <HBox fx:id="titlebar">
+                        <Button styleClass="toolbar-button" fx:id="closeButton" cancelButton="true" mnemonicParsing="false" onAction="#handleCloseButtonAction" />
+                        <Button styleClass="toolbar-button" fx:id="minimizeButton" mnemonicParsing="false" onAction="#handleMinimizeButtonAction" />
+                        <Button styleClass="toolbar-button" fx:id="resizeButton" mnemonicParsing="false" onAction="#handleResizeButtonAction"/>
+                    </HBox>
+                </ToolBar>
+            </top>
+        </BorderPane>
+        <StackPane>
+            <BorderPane fx:id="loginLoading">
+
+            </BorderPane>
+        <BorderPane fx:id="login">
+            <center>
+                <VBox alignment="CENTER">
+                    <HBox alignment="CENTER">
+                        <VBox spacing="30" alignment="CENTER">
+                            <ImageView fx:id="cocoLoginLogo" layoutX="29.0" layoutY="44.0" fitHeight="224.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@images/custom_images/new_coco_logo_v2.png" />
+                                </image>
+                            </ImageView>
+                            <VBox spacing="10" alignment="CENTER">
+                                <VBox fx:id="loginInputGroup">
+                                    <TextField fx:id="usernameInput" styleClass="login-fields" promptText="Username"></TextField>
+                                    <PasswordField fx:id="passwordInput" styleClass="login-fields" promptText="Password"></PasswordField>
+                                </VBox>
+                                <Button fx:id="loginButton" mnemonicParsing="false" onAction="#login">Login</Button>
+                            </VBox>
+                        </VBox>
+                    </HBox>
                 </VBox>
-            </HBox>
-        </VBox>
-    </left>
-    <center>
-        <VBox fx:id="view">
-            <Label styleClass="title">Hello world!</Label>
-            <Separator />
-        </VBox>
-    </center>
-</BorderPane>
+            </center>
+        </BorderPane>
+        <BorderPane fx:id="layout">
+            <left>
+                <VBox fx:id="leftMainNav" styleClass="left-pane">
+                    <HBox fx:id="content" alignment="CENTER">
+                        <VBox fx:id="nav">
+                            <VBox fx:id="navMain" alignment="CENTER">
+                                <Button fx:id="friends" styleClass="nav-item" mnemonicParsing="false" onAction="#viewFriendsList" />
+                                <Button fx:id="chats" styleClass="nav-item" mnemonicParsing="false" onAction="#viewChatList" />
+                                <Button fx:id="more" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
+                            </VBox>
+                            <Region VBox.vgrow="ALWAYS" />
+                            <VBox fx:id="navSecondary" alignment="CENTER">
+                                <Button fx:id="mute" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
+                                <Button fx:id="settings" styleClass="nav-item" mnemonicParsing="false" onAction="#doSomething" />
+                            </VBox>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </left>
+            <center>
+                <VBox fx:id="view">
+                    <Label styleClass="title">Hello world!</Label>
+                    <Separator />
+                </VBox>
+            </center>
+        </BorderPane>
+    </StackPane>
+</StackPane>

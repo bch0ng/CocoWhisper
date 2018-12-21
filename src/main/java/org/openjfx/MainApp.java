@@ -11,29 +11,19 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class MainApp extends Application {
-    private double xOffset = 0; // x-location of window
-    private double yOffset = 0; // y-location of window
-
     @Override
     public void start(Stage stage) throws Exception
     {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("scene.fxml"));
         Parent root = loader.load();
-        // Moves window when pressed and dragged around
-        root.setOnMousePressed((MouseEvent event) -> {
-            xOffset = event.getSceneX();
-            yOffset = event.getSceneY();
-        });
-        root.setOnMouseDragged((MouseEvent event) -> {
-            stage.setX(event.getScreenX() - xOffset);
-            stage.setY(event.getScreenY() - yOffset);
-        });
         Scene scene = new Scene(root, 390, 660);
         // Sends stage to FXMLController.java and initializes
         // handling when the window unfocuses.
         ((FXMLController) loader.getController()).setStage(stage);
-        ((FXMLController) loader.getController()).handleUnfocusedStage();
+        scene.getStylesheets().add(getClass().getResource("titlebar.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("colors.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("nav.css").toExternalForm());
         // Required to round the window borders
         scene.setFill(Color.TRANSPARENT);
         stage.initStyle(StageStyle.TRANSPARENT);

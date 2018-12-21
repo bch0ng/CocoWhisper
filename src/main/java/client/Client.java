@@ -12,8 +12,7 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jxmpp.jid.BareJid;
 
 public class Client {
-    public static void main(String[] args) throws XMPPException, SmackException,
-                IOException, InterruptedException
+    public static void main(String[] args) throws Exception
     {
         Scanner in = new Scanner(System.in);
         while (true) {

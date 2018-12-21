@@ -1,0 +1,22 @@
+/**
+ * In this CSS file contains the main colors used in this application.
+ */
+:root {
+    /* Coco Colors */
+    coco-dark-brown: #8d6868;
+    coco-light-pink: #fff2f0;
+    coco-gray: #7f7f7f;
+
+    /* Kakao Colors */
+    kakao-dark-brown: #403631;
+    kakao-red: #ec6652;
+    kakao-teal: #67c2ba;
+    kakao-black: #252526;
+    kakao-dark-gray: #888888;
+    kakao-gray: #9d9e9e;
+    kakao-light-gray: #f1f1f1;
+    kakao-yellow: #f6e04c;
+    kakao-red-brown: #381f1f;
+    kakao-light-blue: #89aecc;
+    kakao-extra-light-blue: #c3d5e5;
+}

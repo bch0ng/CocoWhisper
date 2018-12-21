@@ -1,150 +1,12 @@
-/** Kakao colors:
- *  #403631 : Left panel dark-brown
- *  #ec6652 : Notification icon red
- *  #67c2ba : Notification banner teal
- *  #ffffff : White
- *  #252526 : Text black
- *  #888888 : Text count + status dark-gray
- *  #9d9e9e : Text friends gray
- *  #f1f1f1 : Horizontal seperator light-gray
- *  #f6e04c : Kakao yellow
- *  #381f1f : Kakao red-brown
- *  #89aecc : Kakao light-blue
- *  #c3d5e5 : Kakao extra-light-blue
- */
 .root {
     -fx-background-color: #fff;
     -fx-background-radius: 5px;
 }
+
 ToolBar,
 .toolbar-button,
 Button.nav-item {
     -fx-background-color: transparent;
-}
-.tool-bar #titlebar {
-    -fx-spacing: 10px;
-}
-.toolbar-button,
-.toolbar-button > graphic > image {
-    -fx-background-size: 12px 12px;
-    -fx-min-height: 12px;
-    -fx-min-width: 12px;
-    -fx-max-height: 12px;
-    -fx-max-width: 12px;
-}
-#closeButton.toolbar-button {
-    -fx-background-image: url("images/titlebar_icons/medium/red.png");
-}
-#titlebar:hover #closeButton.toolbar-button,
-#closeButton.toolbar-button:hover {
-    -fx-background-image: url("images/titlebar_icons/medium/red_hover.png");
-}
-#closeButton.toolbar-button:pressed {
-    -fx-background-image: url("images/titlebar_icons/medium/red_active.png");
-}
-#minimizeButton.toolbar-button {
-    -fx-background-image: url("images/titlebar_icons/medium/yellow.png");
-}
-#titlebar:hover #minimizeButton.toolbar-button,
-#minimizeButton.toolbar-button:hover {
-    -fx-background-image: url("images/titlebar_icons/medium/yellow_hover.png");
-}
-#minimizeButton.toolbar-button:pressed {
-    -fx-background-image: url("images/titlebar_icons/medium/yellow_active.png");
-}
-#resizeButton.toolbar-button {
-    -fx-background-image: url("images/titlebar_icons/medium/green.png");
-}
-#titlebar:hover #resizeButton.toolbar-button,
-#resizeButton.toolbar-button:hover {
-    -fx-background-image: url("images/titlebar_icons/medium/green_hover.png");
-}
-#resizeButton.toolbar-button:pressed {
-    -fx-background-image: url("images/titlebar_icons/medium/green_active.png");
-}
-.unfocused-button.toolbar-button {
-    -fx-background-image: url("images/titlebar_icons/medium/unfocused.png") !important;
-}
-.left-pane {
-    -fx-min-width: 60px;
-    -fx-background-radius: 4px 0 0 4px;
-    -fx-background-color: #403631;
-}
-.nav-item {
-    -fx-alignment: center;
-}
-/*
- * Nav icons courtesy of FontAwesome (https://fontawesome.com/license)
- */
-#nav {
-    -fx-padding: 30px 0 22px 0;
-}
-#navMain {
-    -fx-spacing: 35px;
-}
-#navSecondary {
-    -fx-spacing: 25px;
-}
-#navMain Button.nav-item {
-    -fx-min-width: 22px;
-    -fx-min-height: 22px;
-    -fx-max-width: 22px;
-    -fx-max-height: 22px;
-    -fx-background-size: 22px auto;
-    -fx-background-repeat: no-repeat;
-}
-#navSecondary Button.nav-item {
-    -fx-max-width: 15px;
-    -fx-min-height: 15px;
-    -fx-min-width: 15px;
-    -fx-max-height: 15px;
-    -fx-background-size: 14px auto;
-    -fx-background-repeat: no-repeat;
-}
-#navMain > Button.nav-item#friends {
-    -fx-background-image: url("images/nav_icons/user.png");
-}
-#navMain > Button.nav-item#friends:hover {
-    -fx-background-image: url("images/nav_icons/user_hover.png");
-}
-#navMain > Button.nav-item#friends:focused {
-    -fx-background-image: url("images/nav_icons/user_active.png");
-}
-#navMain > Button.nav-item#chats {
-    -fx-background-image: url("images/nav_icons/chat.png");
-}
-#navMain > Button.nav-item#chats:hover {
-    -fx-background-image: url("images/nav_icons/chat_hover.png");
-}
-#navMain > Button.nav-item#chats:focused {
-    -fx-background-image: url("images/nav_icons/chat_active.png");
-}
-#navMain > Button.nav-item#more {
-    -fx-background-image: url("images/nav_icons/more.png");
-}
-#navMain > Button.nav-item#more:hover {
-    -fx-background-image: url("images/nav_icons/more_hover.png");
-}
-#navMain > Button.nav-item#more:focused {
-    -fx-background-image: url("images/nav_icons/more_active.png");
-}
-#navSecondary > Button.nav-item#mute {
-    -fx-background-image: url("images/nav_icons/bell.png");
-}
-#navSecondary > Button.nav-item#mute:hover {
-    -fx-background-image: url("images/nav_icons/bell_hover.png");
-}
-#navSecondary > Button.nav-item#mute:focused {
-    -fx-background-image: url("images/nav_icons/mute.png");
-}
-#navSecondary > Button.nav-item#settings {
-    -fx-background-image: url("images/nav_icons/cog.png");
-}
-#navSecondary > Button.nav-item#settings:hover {
-    -fx-background-image: url("images/nav_icons/cog_hover.png");
-}
-#navSecondary > Button.nav-item#settings:focused {
-    -fx-background-image: url("images/nav_icons/cog_active.png");
 }
 
 #view .title{
@@ -156,5 +18,65 @@ Button.nav-item {
 .separator {
     -fx-background-color: transparent;
     -fx-opacity: 0.3;
+}
 
+/* Custom colors: fff2f0; 7f7f7f; 8d6868 */
+#login {
+    -fx-background-color: #8d6868;
+    -fx-background-radius: 4px;
+}
+.login-fields {
+    -fx-alignment: center;
+    -fx-text-fill: #7f7f7f;
+    -fx-background-insets: 0;
+    -fx-padding: 10px 15px;
+    -fx-text-box-border: transparent;
+    -fx-start-margin: auto;
+    -fx-end-margin: auto;
+    -fx-min-width: 200px;
+    -fx-max-width: 200px;
+    -fx-min-height: 40px;
+    -fx-max-height: 40px;
+    -fx-background-color: white;
+}
+#usernameInput {
+
+    -fx-background-radius: 5px 5px 0 0;
+    -fx-background-image: url("images/custom_images/login_text_field_bg.png");
+    -fx-background-size: 200px auto;
+    -fx-background-position: bottom;
+    -fx-background-repeat: no-repeat;
+}
+#passwordInput {
+    -fx-font-size: 1em;
+    -fx-background-image: url("images/custom_images/login_text_field_bg.png");
+    -fx-background-size: 200px auto;
+    -fx-background-position: top;
+    -fx-background-repeat: no-repeat;
+    -fx-background-radius: 0 0 5px 5px;
+}
+
+.login-fields:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);
+}
+#loginButton {
+    -fx-background-color: #fff2f0;
+    -fx-text-fill: #8d6868;
+    -fx-padding: 15px;
+    -fx-min-width: 200px;
+    -fx-max-width: 200px;
+}
+#loginButton:pressed {
+    -fx-opacity: 0.8;
+}
+#loginInputGroup {
+    -fx-min-height: 100px;
+    -fx-max-height: 100px;
+}
+.error-message {
+    -fx-padding: 10px;
+    -fx-text-alignment: center;
+    -fx-text-fill: #fff2f0;
 }
