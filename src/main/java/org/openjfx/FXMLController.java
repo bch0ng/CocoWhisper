@@ -69,6 +69,7 @@ public class FXMLController {
     @FXML private TextField nicknameInput;
     @FXML private PasswordField passwordInputChecker;
     @FXML private VBox inputFields;
+    @FXML private Label passwordHint;
 
     public void initialize() {
         try {
@@ -84,6 +85,10 @@ public class FXMLController {
         nicknameInput.setManaged(false);
         passwordInputChecker.setVisible(false);
         passwordInputChecker.setManaged(false);
+        passwordHint.setVisible(false);
+        passwordHint.setManaged(false);
+        passwordHint.setVisible(false);
+        passwordHint.setManaged(false);
         //login();
         titleCont.setPickOnBounds(false);
         titleCont.toFront();
@@ -162,8 +167,18 @@ public class FXMLController {
         nicknameInput.setManaged(true);
         passwordInputChecker.setVisible(true);
         passwordInputChecker.setManaged(true);
+        passwordInput.focusedProperty().addListener((obs, oldVal, isFocused) -> {
+                    if (registering && isFocused) {
+                        passwordHint.setVisible(true);
+                        passwordHint.setManaged(true);
+                    } else {
+                        passwordHint.setVisible(false);
+                        passwordHint.setManaged(false);
+                    }
+                });
         usernameInput.pseudoClassStateChanged(registerPseudoClass, true);
         passwordInput.pseudoClassStateChanged(registerPseudoClass, true);
+        loginInputGroup.pseudoClassStateChanged(registerPseudoClass, true);
         loginButton.setText("Create an Account!");
         loginButton.setOnAction((ActionEvent e) -> this.register());
         loginRegisterViewChanger.setText("Login");
@@ -174,8 +189,11 @@ public class FXMLController {
             nicknameInput.setManaged(false);
             passwordInputChecker.setVisible(false);
             passwordInputChecker.setManaged(false);
+            passwordHint.setVisible(false);
+            passwordHint.setManaged(false);
             passwordInput.pseudoClassStateChanged(registerPseudoClass, false);
             usernameInput.pseudoClassStateChanged(registerPseudoClass, false);
+            loginInputGroup.pseudoClassStateChanged(registerPseudoClass, false);
             passwordInput.clear();
             passwordInputChecker.clear();
             loginButton.setOnAction((ActionEvent event) -> login());
@@ -188,9 +206,22 @@ public class FXMLController {
 
     private void register() {
         try {
-            //System.out.println(usernameInput.getText());
+            /** Courtesy of Tomalak (https://stackoverflow.com/questions/3802192/regexp-java-for-password-validation)
+                ^                 # start-of-string
+                (?=.*[0-9])       # a digit must occur at least once
+                (?=.*[a-z])       # a lower case letter must occur at least once
+                (?=.*[A-Z])       # an upper case letter must occur at least once
+                (?=.*[@#$%^&+=])  # a special character must occur at least once
+                (?=\S+$)          # no whitespace allowed in the entire string
+                .{8,}             # anything, at least eight places though
+                $                 # end-of-string
+
+                Regex used here is courtesy of Eric Miller (http://regexlib.com/UserPatterns.aspx?authorId=5d8befe8-259d-41b3-8691-020504cbb97e)
+             */
             if (!passwordInput.getText().equals(passwordInputChecker.getText())) {
                 throw new Exception("Passwords were not the same.");
+            } else if (!passwordInput.getText().matches("^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{6,}$")) {
+                throw new Exception("Password was not strong enough.");
             }
             connection.register(usernameInput.getText(), passwordInput.getText(), nicknameInput.getText());
             registering = false;

@@ -49,6 +49,7 @@
                                         <TextField fx:id="nicknameInput" styleClass="login-register-fields" promptText="Name (Optional)" />
                                         <PasswordField fx:id="passwordInput" styleClass="login-register-fields, last-login-register-field" promptText="Password" />
                                         <PasswordField fx:id="passwordInputChecker" styleClass="login-register-fields, last-login-register-field" promptText="Retype Password" />
+                                        <Label fx:id="passwordHint" styleClass="error-message">Password must be atleast 6 characters and include letters and a number.</Label>
                                     </VBox>
                                     <Button fx:id="loginButton" mnemonicParsing="false" onAction="#login">Log In</Button>
                                 </VBox>

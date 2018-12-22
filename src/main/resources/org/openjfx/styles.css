@@ -103,6 +103,10 @@ Button.nav-item {
     -fx-min-height: 160px;
     -fx-max-height: 160px;
 }
+#loginInputGroup:register {
+    -fx-min-height: 240px;
+    -fx-max-height: 240px;
+}
 #loginRegisterViewChanger {
     -fx-text-fill: #fff2f0;
 }
