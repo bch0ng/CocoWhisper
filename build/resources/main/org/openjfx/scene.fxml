@@ -15,6 +15,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Hyperlink?>
 <StackPane fx:id="testing" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.FXMLController">
         <BorderPane fx:id="titleCont">
             <top>
@@ -41,17 +42,26 @@
                                     <Image url="@images/custom_images/new_coco_logo_v2.png" />
                                 </image>
                             </ImageView>
-                            <VBox spacing="10" alignment="CENTER">
-                                <VBox fx:id="loginInputGroup">
-                                    <TextField fx:id="usernameInput" styleClass="login-fields" promptText="Username"></TextField>
-                                    <PasswordField fx:id="passwordInput" styleClass="login-fields" promptText="Password"></PasswordField>
+                            <VBox alignment="CENTER">
+                                <VBox fx:id="loginInputGroup" spacing="10">
+                                    <VBox fx:id="inputFields">
+                                        <TextField fx:id="usernameInput" styleClass="login-register-fields, first-login-register-field" promptText="Username" />
+                                        <TextField fx:id="nicknameInput" styleClass="login-register-fields" promptText="Name (Optional)" />
+                                        <PasswordField fx:id="passwordInput" styleClass="login-register-fields, last-login-register-field" promptText="Password" />
+                                        <PasswordField fx:id="passwordInputChecker" styleClass="login-register-fields, last-login-register-field" promptText="Retype Password" />
+                                    </VBox>
+                                    <Button fx:id="loginButton" mnemonicParsing="false" onAction="#login">Log In</Button>
                                 </VBox>
-                                <Button fx:id="loginButton" mnemonicParsing="false" onAction="#login">Login</Button>
                             </VBox>
                         </VBox>
                     </HBox>
                 </VBox>
             </center>
+            <bottom>
+                <HBox prefHeight="60" alignment="CENTER">
+                    <Hyperlink fx:id="loginRegisterViewChanger" onAction="#viewRegister">Create an Account</Hyperlink>
+                </HBox>
+            </bottom>
         </BorderPane>
         <BorderPane fx:id="layout">
             <left>

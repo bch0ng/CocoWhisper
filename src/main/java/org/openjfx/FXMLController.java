@@ -13,11 +13,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.jivesoftware.smack.roster.RosterEntry;
+import org.jivesoftware.smackx.iqregister.AccountManager;
+
 import java.util.Collection;
 
 public class FXMLController {
@@ -36,6 +39,8 @@ public class FXMLController {
     private ChattyXMPPConnection connection;
     private double xOffset = 0; // x-location of window
     private double yOffset = 0; // y-location of window
+    private TextField[] loginRegisterFields;
+    private boolean registering = false;
 
     // CSS ID's used in scene.fxml
     @FXML private BorderPane titleCont;
@@ -60,28 +65,51 @@ public class FXMLController {
     @FXML private Button loginButton;
     @FXML private ImageView cocoLoginLogo;
     @FXML private VBox loginInputGroup;
+    @FXML private Hyperlink loginRegisterViewChanger;
+    @FXML private TextField nicknameInput;
+    @FXML private PasswordField passwordInputChecker;
+    @FXML private VBox inputFields;
 
     public void initialize() {
+        try {
+            connection = new ChattyXMPPConnection();
+        } catch (Exception e) {
+            e.getMessage();
+        }
         MenuBar menuBar = new MenuBar();
         menuBar.useSystemMenuBarProperty().set(true);
         this.isMaximized = false;
         layout.setVisible(false);
+        nicknameInput.setVisible(false);
+        nicknameInput.setManaged(false);
+        passwordInputChecker.setVisible(false);
+        passwordInputChecker.setManaged(false);
+        //login();
         titleCont.setPickOnBounds(false);
         titleCont.toFront();
-        System.out.println(testing.getChildren());
 
         BooleanBinding loginFieldsNotEmpty = new BooleanBinding() {
             {
                 super.bind(usernameInput.textProperty(),
-                        passwordInput.textProperty());
+                        passwordInput.textProperty(),
+                        passwordInputChecker.managedProperty(),
+                        passwordInputChecker.visibleProperty(),
+                        passwordInputChecker.textProperty());
             }
-
             @Override
-            protected boolean computeValue() {
-                return (!usernameInput.getText().isEmpty()
-                        && !passwordInput.getText().isEmpty());
+            protected boolean computeValue()
+            {
+                if (passwordInputChecker.isManaged() && passwordInputChecker.isVisible()) {
+                    return  (!usernameInput.getText().isBlank()
+                            && !passwordInput.getText().isBlank()
+                            && !passwordInputChecker.getText().isBlank());
+                } else {
+                    return (!usernameInput.getText().isBlank()
+                            && !passwordInput.getText().isBlank());
+                }
             }
         };
+
         passwordInput.textProperty().addListener((obs, oldText, newText) -> {
             if (passwordInput.getText().length() > 0) {
                 passwordInput.setStyle("-fx-font-size: 0.5em");
@@ -89,23 +117,34 @@ public class FXMLController {
                 passwordInput.setStyle("-fx-font-size: 1em");
             }
         });
+        passwordInputChecker.textProperty().addListener((obs, oldText, newText) -> {
+            if (passwordInputChecker.getText().length() > 0) {
+                passwordInputChecker.setStyle("-fx-font-size: 0.5em");
+            } else {
+                passwordInputChecker.setStyle("-fx-font-size: 1em");
+            }
+        });
+        loginRegisterFields = new TextField[4];
+        loginRegisterFields[0] = usernameInput;
+        loginRegisterFields[1] = nicknameInput;
+        loginRegisterFields[2] = passwordInput;
+        loginRegisterFields[3] = passwordInputChecker;
+
         loginButton.visibleProperty().bind(loginFieldsNotEmpty);
-        usernameInput.setOnKeyPressed(event -> {
-            if(event.getCode() == KeyCode.ENTER){
-                if (loginFieldsNotEmpty.get()) {
-                    this.login();
+        for (TextField field : loginRegisterFields) {
+            field.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ENTER) {
+                    if (loginFieldsNotEmpty.get()) {
+                        if (registering) {
+                            this.register();
+                        } else {
+                            this.login();
+                        }
+                    }
                 }
-            }
-        });
-        passwordInput.setOnKeyPressed(event -> {
-            if(event.getCode() == KeyCode.ENTER){
-                if (loginFieldsNotEmpty.get()) {
-                    this.login();
-                }
-            }
-        });
+            });
+        }
         toolbar.setOnMousePressed((MouseEvent event) -> {
-            System.out.println("kek");
             xOffset = event.getSceneX();
             yOffset = event.getSceneY();
         });
@@ -113,6 +152,52 @@ public class FXMLController {
             stage.setX(event.getScreenX() - xOffset);
             stage.setY(event.getScreenY() - yOffset);
         });
+    }
+
+    public void viewRegister() {
+        registering = true;
+        passwordInput.clear();
+        final PseudoClass registerPseudoClass = PseudoClass.getPseudoClass("register");
+        nicknameInput.setVisible(true);
+        nicknameInput.setManaged(true);
+        passwordInputChecker.setVisible(true);
+        passwordInputChecker.setManaged(true);
+        usernameInput.pseudoClassStateChanged(registerPseudoClass, true);
+        passwordInput.pseudoClassStateChanged(registerPseudoClass, true);
+        loginButton.setText("Create an Account!");
+        loginButton.setOnAction((ActionEvent e) -> this.register());
+        loginRegisterViewChanger.setText("Login");
+        loginRegisterViewChanger.setVisited(false);
+        loginRegisterViewChanger.setOnAction((ActionEvent e) -> {
+            registering = false;
+            nicknameInput.setVisible(false);
+            nicknameInput.setManaged(false);
+            passwordInputChecker.setVisible(false);
+            passwordInputChecker.setManaged(false);
+            passwordInput.pseudoClassStateChanged(registerPseudoClass, false);
+            usernameInput.pseudoClassStateChanged(registerPseudoClass, false);
+            passwordInput.clear();
+            passwordInputChecker.clear();
+            loginButton.setOnAction((ActionEvent event) -> login());
+            loginButton.setText("Log In");
+            loginRegisterViewChanger.setOnAction((ActionEvent event) -> viewRegister());
+            loginRegisterViewChanger.setText("Create an Account");
+            loginRegisterViewChanger.setVisited(false);
+        });
+    }
+
+    private void register() {
+        try {
+            //System.out.println(usernameInput.getText());
+            if (!passwordInput.getText().equals(passwordInputChecker.getText())) {
+                throw new Exception("Passwords were not the same.");
+            }
+            connection.register(usernameInput.getText(), passwordInput.getText(), nicknameInput.getText());
+            registering = false;
+            viewLayout();
+        } catch(Exception ex) {
+            errorMessage(ex.getMessage());
+        }
     }
 
     /**
@@ -256,12 +341,31 @@ public class FXMLController {
         try {
             Collection<RosterEntry> friends = connection.roster();
             title.setText("Friends " + friends.size());
-            view.getChildren().add(title);
-            view.getChildren().add(new Separator());
+            view.getChildren().addAll(title, new Separator());
             VBox friendsList = new VBox();
+            Label myProfileTitle = new Label("My Profile");
+            myProfileTitle.getStyleClass().add("sub-title");
+            friendsList.getChildren().addAll(myProfileTitle, new Separator());
+            ToggleGroup friendsListGroup = new ToggleGroup();
+            RadioButton loggedInUserInfo = new RadioButton(
+                    connection.getUserVCard().getField("Name"));
+            loggedInUserInfo.getStyleClass().add("friendBtn");
+            loggedInUserInfo.getStyleClass().remove("radio-button");
+            loggedInUserInfo.getStyleClass().add("toggle-button");
+            VBox.setVgrow(loggedInUserInfo, Priority.ALWAYS);
+            loggedInUserInfo.setMaxWidth(Double.MAX_VALUE);
+            loggedInUserInfo.setToggleGroup(friendsListGroup);
+            friendsList.getChildren().add(loggedInUserInfo);
             for (RosterEntry friend : friends) {
-                Button friendInfo = new Button();
+                //Button friendInfo = new Button();
+                RadioButton friendInfo = new RadioButton();
+                friendInfo.getStyleClass().add("friendBtn");
+                friendInfo.getStyleClass().remove("radio-button");
+                friendInfo.getStyleClass().add("toggle-button");
+                VBox.setVgrow(friendInfo, Priority.ALWAYS);
+                friendInfo.setMaxWidth(Double.MAX_VALUE);
                 friendInfo.setText(friend.getName());
+                friendInfo.setToggleGroup(friendsListGroup);
                 friendsList.getChildren().add(friendInfo);
             }
             view.getChildren().add(friendsList);
@@ -291,45 +395,47 @@ public class FXMLController {
 
     public void login() {
         RotateTransition rt = new RotateTransition(Duration.millis(1000), cocoLoginLogo);
+        usernameInput.disableProperty().setValue(true);
+        passwordInput.disableProperty().setValue(true);
+        rt.setByAngle(360);
+        rt.setCycleCount(Animation.INDEFINITE);
+        rt.setInterpolator(Interpolator.LINEAR);
+        rt.play();
         try {
-            usernameInput.disableProperty().setValue(true);
-            passwordInput.disableProperty().setValue(true);
-            rt.setByAngle(360);
-            rt.setCycleCount(Animation.INDEFINITE);
-            rt.setInterpolator(Interpolator.LINEAR);
-            rt.play();
-            connection = new ChattyXMPPConnection(usernameInput.getText(), passwordInput.getText());
+            connection.login(usernameInput.getText(), passwordInput.getText());
             rt.stop();
-            friends.requestFocus();
-            login.setVisible(false);
-            layout.setVisible(true);
-            viewFriendsList();
-            System.out.println("worked!");
+            viewLayout();
         } catch (Exception e) {
+            e.printStackTrace();
             rt.stop();
             cocoLoginLogo.setRotate(0);
             usernameInput.disableProperty().setValue(false);
             passwordInput.disableProperty().setValue(false);
-            passwordInput.clear();
-            Label errorMessage = new Label(e.getMessage());
-            errorMessage.getStyleClass().add("error-message");
-            loginInputGroup.getChildren().add(errorMessage);
-            loginInputGroup.setStyle("-fx-effect: dropshadow(three-pass-box, #fff2f0, 30, 0, 0, 0);");
-            usernameInput.textProperty().addListener((obs, oldText, newText) -> {
-                if (usernameInput.getText().length() > 0) {
-                    loginInputGroup.getChildren().remove(errorMessage);
-                    loginInputGroup.setStyle("-fx-effect: none");
-                }
-            });
-            passwordInput.textProperty().addListener((obs, oldText, newText) -> {
-                if (passwordInput.getText().length() > 0) {
-                    loginInputGroup.getChildren().remove(errorMessage);
-                    loginInputGroup.setStyle("-fx-effect: none");
-                }
-            });
-            //usernameInput.setStyle("-fx-border-style: solid solid none solid; -fx-border-width: 5; -fx-border-color: red;");
-            //passwordInput.setStyle("-fx-border-style: solid solid none solid; -fx-border-width: 5; -fx-border-color: red;");
-            System.out.println("oh no");
         }
+    }
+
+    private void errorMessage(String message) {
+        passwordInput.clear();
+        passwordInputChecker.clear();
+        Label errorMessage = new Label(message);
+        errorMessage.getStyleClass().add("error-message");
+        inputFields.getChildren().add(errorMessage);
+        inputFields.setStyle("-fx-effect: dropshadow(three-pass-box, #fff2f0, 30, 0, 0, 0);");
+        for (TextField field : loginRegisterFields) {
+            field.textProperty().addListener((obs, oldText, newText) -> {
+                if (usernameInput.getText().length() > 0) {
+                    inputFields.getChildren().remove(errorMessage);
+                    inputFields.setStyle("-fx-effect: none");
+                }
+            });
+        }
+    }
+
+    public void viewLayout() {
+        friends.requestFocus();
+        login.setVisible(false);
+        layout.setVisible(true);
+        viewFriendsList();
+
     }
 }

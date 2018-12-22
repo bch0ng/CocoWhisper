@@ -8,11 +8,17 @@ ToolBar,
 Button.nav-item {
     -fx-background-color: transparent;
 }
-
-#view .title{
+#view {
+    -fx-text-fill: #7f7f7f;
+}
+#view .title {
     -fx-label-padding: 15px;
     -fx-font-size: 1.1em;
     -fx-font-weight: bold;
+}
+#view .sub-title {
+    -fx-label-padding: 3px 15px;
+    -fx-font-size: 0.9em;
 }
 
 .separator {
@@ -25,7 +31,8 @@ Button.nav-item {
     -fx-background-color: #8d6868;
     -fx-background-radius: 4px;
 }
-.login-fields {
+.login-register-fields {
+    -fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);
     -fx-alignment: center;
     -fx-text-fill: #7f7f7f;
     -fx-background-insets: 0;
@@ -38,12 +45,29 @@ Button.nav-item {
     -fx-min-height: 40px;
     -fx-max-height: 40px;
     -fx-background-color: white;
+    -fx-background-radius: 0;
+}
+.login-register-fields:focused {
+    -fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);
+}
+.first-login-register-field {
+    -fx-background-radius: 5px 5px 0 0;
+}
+.last-login-register-field {
+    -fx-background-radius: 0 0 5px 5px;
 }
 #usernameInput {
-
-    -fx-background-radius: 5px 5px 0 0;
     -fx-background-image: url("images/custom_images/login_text_field_bg.png");
     -fx-background-size: 200px auto;
+    -fx-background-position: bottom;
+    -fx-background-repeat: no-repeat;
+}
+#usernameInput:register {
+    -fx-background-size: 200px 2px;
+}
+#nicknameInput {
+    -fx-background-image: url("images/custom_images/login_text_field_bg.png");
+    -fx-background-size: 200px 2px;
     -fx-background-position: bottom;
     -fx-background-repeat: no-repeat;
 }
@@ -55,7 +79,11 @@ Button.nav-item {
     -fx-background-repeat: no-repeat;
     -fx-background-radius: 0 0 5px 5px;
 }
-
+#passwordInput:register {
+    -fx-background-size: 200px 2px;
+    -fx-background-position: bottom;
+    -fx-background-radius: 0;
+}
 .login-fields:focused {
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
@@ -72,11 +100,35 @@ Button.nav-item {
     -fx-opacity: 0.8;
 }
 #loginInputGroup {
-    -fx-min-height: 100px;
-    -fx-max-height: 100px;
+    -fx-min-height: 160px;
+    -fx-max-height: 160px;
 }
+#loginRegisterViewChanger {
+    -fx-text-fill: #fff2f0;
+}
+#loginRegisterViewChanger:focused {
+    -fx-border-style: none;
+    -fx-border-color: transparent;
+}
+
 .error-message {
     -fx-padding: 10px;
     -fx-text-alignment: center;
     -fx-text-fill: #fff2f0;
+    -fx-min-width: 200px;
+    -fx-max-width: 200px;
+    -fx-min-height: 100px;
+    -fx-max-height: 100px;
+    -fx-wrap-text: true;
+}
+.friendBtn {
+    -fx-background-color: yellow;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-text-alignment: left;
+    -fx-min-height: 70px;
+    -fx-max-height: 70px;
+}
+.friendBtn:selected {
+    -fx-background-color: blue;
 }
