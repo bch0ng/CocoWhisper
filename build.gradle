@@ -8,18 +8,14 @@ application {
     mainClassName = "org.openjfx.MainApp"
 }
 
-
 repositories {
     mavenCentral()
 }
 
 version 'ALPHA-SNAPSHOT'
 
-sourceCompatibility = 11
-
-javafx {
-    modules = [ 'javafx.controls', 'javafx.fxml' ]
-}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -37,8 +33,33 @@ dependencies {
 
 }
 
+javafx {
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
 mainClassName = "org.openjfx.MainApp"
 
 run {
     standardInput = System.in
+}
+
+jar {
+    archiveName = "coco_whisper.jar"
+
+    from {
+
+        configurations.runtime.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+    manifest {
+        attributes 'Main-Class': 'org.openjfx.CocoWhisper'
+    }
+
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
 }

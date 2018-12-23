@@ -41,6 +41,7 @@ public class FXMLController {
     private double yOffset = 0; // y-location of window
     private TextField[] loginRegisterFields;
     private boolean registering = false;
+    private Label errorMessage;
 
     // CSS ID's used in scene.fxml
     @FXML private BorderPane titleCont;
@@ -105,12 +106,12 @@ public class FXMLController {
             protected boolean computeValue()
             {
                 if (passwordInputChecker.isManaged() && passwordInputChecker.isVisible()) {
-                    return  (!usernameInput.getText().isBlank()
-                            && !passwordInput.getText().isBlank()
-                            && !passwordInputChecker.getText().isBlank());
+                    return  (!usernameInput.getText().trim().isEmpty()
+                            && !passwordInput.getText().trim().isEmpty()
+                            && !passwordInputChecker.getText().trim().isEmpty());
                 } else {
-                    return (!usernameInput.getText().isBlank()
-                            && !passwordInput.getText().isBlank());
+                    return (!usernameInput.getText().trim().isEmpty()
+                            && !passwordInput.getText().trim().isEmpty());
                 }
             }
         };
@@ -161,6 +162,7 @@ public class FXMLController {
 
     public void viewRegister() {
         registering = true;
+        clearErrorMessage();
         passwordInput.clear();
         final PseudoClass registerPseudoClass = PseudoClass.getPseudoClass("register");
         nicknameInput.setVisible(true);
@@ -185,6 +187,7 @@ public class FXMLController {
         loginRegisterViewChanger.setVisited(false);
         loginRegisterViewChanger.setOnAction((ActionEvent e) -> {
             registering = false;
+            clearErrorMessage();
             nicknameInput.setVisible(false);
             nicknameInput.setManaged(false);
             passwordInputChecker.setVisible(false);
@@ -437,7 +440,7 @@ public class FXMLController {
             rt.stop();
             viewLayout();
         } catch (Exception e) {
-            e.printStackTrace();
+            errorMessage(e.getMessage());
             rt.stop();
             cocoLoginLogo.setRotate(0);
             usernameInput.disableProperty().setValue(false);
@@ -448,18 +451,22 @@ public class FXMLController {
     private void errorMessage(String message) {
         passwordInput.clear();
         passwordInputChecker.clear();
-        Label errorMessage = new Label(message);
+        errorMessage = new Label(message);
         errorMessage.getStyleClass().add("error-message");
         inputFields.getChildren().add(errorMessage);
         inputFields.setStyle("-fx-effect: dropshadow(three-pass-box, #fff2f0, 30, 0, 0, 0);");
         for (TextField field : loginRegisterFields) {
             field.textProperty().addListener((obs, oldText, newText) -> {
-                if (usernameInput.getText().length() > 0) {
-                    inputFields.getChildren().remove(errorMessage);
-                    inputFields.setStyle("-fx-effect: none");
+                if (field.getText().length() > 0) {
+                    clearErrorMessage();
                 }
             });
         }
+    }
+
+    private void clearErrorMessage() {
+        inputFields.getChildren().remove(errorMessage);
+        inputFields.setStyle("-fx-effect: none");
     }
 
     public void viewLayout() {
