@@ -22,6 +22,7 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 public class FXMLController {
     // Size in pixels (px) for titlebar icons.
@@ -42,6 +43,7 @@ public class FXMLController {
     private TextField[] loginRegisterFields;
     private boolean registering = false;
     private Label errorMessage;
+    private HBox currentlySelectedFriend;
 
     // CSS ID's used in scene.fxml
     @FXML private BorderPane titleCont;
@@ -380,26 +382,29 @@ public class FXMLController {
             Label myProfileTitle = new Label("My Profile");
             myProfileTitle.getStyleClass().add("sub-title");
             friendsList.getChildren().addAll(myProfileTitle, new Separator());
-            ToggleGroup friendsListGroup = new ToggleGroup();
-            RadioButton loggedInUserInfo = new RadioButton(
-                    connection.getUserVCard().getField("Name"));
-            loggedInUserInfo.getStyleClass().add("friendBtn");
-            loggedInUserInfo.getStyleClass().remove("radio-button");
-            loggedInUserInfo.getStyleClass().add("toggle-button");
-            VBox.setVgrow(loggedInUserInfo, Priority.ALWAYS);
-            loggedInUserInfo.setMaxWidth(Double.MAX_VALUE);
-            loggedInUserInfo.setToggleGroup(friendsListGroup);
-            friendsList.getChildren().add(loggedInUserInfo);
-            for (RosterEntry friend : friends) {
-                //Button friendInfo = new Button();
-                RadioButton friendInfo = new RadioButton();
+            Iterator iter = friends.iterator();
+            boolean friend = false;
+            while (iter.hasNext()) {
+                HBox friendInfo = new HBox();
+                if (!friend) {
+                    // For adding current user's information
+                    try {
+                        friendInfo.getChildren().add(new Label(connection.getUserVCard().getField("Name")));
+                    } catch (Exception e) {
+                        System.out.println("Could not get current user's VCard");
+                    }
+                    friend = true;
+                } else {
+                    friendInfo.getChildren().add(new Label(((RosterEntry) iter.next()).getName()));
+                }
                 friendInfo.getStyleClass().add("friendBtn");
-                friendInfo.getStyleClass().remove("radio-button");
-                friendInfo.getStyleClass().add("toggle-button");
-                VBox.setVgrow(friendInfo, Priority.ALWAYS);
-                friendInfo.setMaxWidth(Double.MAX_VALUE);
-                friendInfo.setText(friend.getName());
-                friendInfo.setToggleGroup(friendsListGroup);
+                friendInfo.setOnMouseClicked((MouseEvent m) -> {
+                    if (currentlySelectedFriend != null) {
+                        currentlySelectedFriend.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), false);
+                    }
+                    currentlySelectedFriend = friendInfo;
+                    friendInfo.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), true);
+                });
                 friendsList.getChildren().add(friendInfo);
             }
             view.getChildren().add(friendsList);

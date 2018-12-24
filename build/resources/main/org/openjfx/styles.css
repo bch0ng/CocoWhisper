@@ -133,6 +133,6 @@ Button.nav-item {
     -fx-min-height: 70px;
     -fx-max-height: 70px;
 }
-.friendBtn:selected {
+.friendBtn:friend-selected {
     -fx-background-color: blue;
 }
