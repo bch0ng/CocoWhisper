@@ -15,13 +15,20 @@
     <StackPane>
         <BorderPane>
             <top>
-                <Label>CHATROOM NAME + FRIEND</Label>
+                <VBox fx:id="chatroomInfo" />
             </top>
             <center>
-                <Label>CHAT HISTORY</Label>
+                <VBox fx:id="viewChat">
+
+                </VBox>
             </center>
             <bottom>
-                <Label>CHAT SEND</Label>
+                <HBox fx:id="sendMsg" spacing="20">
+                    <TextArea fx:id="msgContainer" wrapText="true" />
+                    <HBox alignment="CENTER">
+                        <Button fx:id="msgSubmitBtn">Send</Button>
+                    </HBox>
+                </HBox>
             </bottom>
         </BorderPane>
     </StackPane>

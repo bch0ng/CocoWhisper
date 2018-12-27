@@ -1,0 +1,116 @@
+/*
+ * Nav icons courtesy of FontAwesome (https://fontawesome.com/license)
+ */
+.nav-item {
+    -fx-alignment: center;
+}
+.left-pane {
+    -fx-min-width: 70px;
+    -fx-background-radius: 4px 0 0 4px;
+    -fx-background-color: #8d6868;
+}
+#nav {
+    -fx-padding: 55px 0 22px 0;
+}
+#navMain {
+    -fx-spacing: 35px;
+}
+#navSecondary {
+    -fx-spacing: 25px;
+}
+#navMain Button.nav-item {
+    -fx-min-width: 22px;
+    -fx-min-height: 22px;
+    -fx-max-width: 22px;
+    -fx-max-height: 22px;
+    -fx-background-size: 22px auto;
+    -fx-background-repeat: no-repeat;
+}
+#navSecondary Button.nav-item {
+    -fx-max-width: 15px;
+    -fx-min-height: 15px;
+    -fx-min-width: 15px;
+    -fx-max-height: 15px;
+    -fx-background-size: 14px auto;
+    -fx-background-repeat: no-repeat;
+}
+#navMain > Button.nav-item#friends,
+#navMain > #friends.nav-item.active-icon:pressed {
+    -fx-background-image: url("../images/nav_icons/friends.png");
+}
+#navMain > #friends.nav-item:hover {
+    -fx-background-image: url("../images/nav_icons/friends_hover.png");
+}
+#navMain > #friends.nav-item:focused {
+    -fx-background-image: url("../images/nav_icons/friends_active.png");
+}
+#friends.nav-item.active-icon {
+    -fx-background-image: url("../images/nav_icons/friends_active.png") !important;
+}
+#friends.nav-item.active-icon:pressed {
+    -fx-background-image: url("../images/nav_icons/friends.png") !important;
+}
+
+#navMain > #chats.nav-item {
+    -fx-background-image: url("../images/nav_icons/chat.png");
+}
+#navMain > #chats.nav-item:hover {
+    -fx-background-image: url("../images/nav_icons/chat_hover.png");
+}
+#navMain > #chats.nav-item:focused {
+    -fx-background-image: url("../images/nav_icons/chat_active.png");
+}
+#chats.nav-item.active-icon {
+    -fx-background-image: url("../images/nav_icons/chat_active.png") !important;
+}
+#chats.nav-item.active-icon:pressed {
+    -fx-background-image: url("../images/nav_icons/chat.png") !important;
+}
+
+#navMain > #more.nav-item {
+    -fx-background-image: url("../images/nav_icons/more.png");
+}
+#navMain > #more.nav-item:hover {
+    -fx-background-image: url("../images/nav_icons/more_hover.png");
+}
+#navMain > #more.nav-item:focused {
+    -fx-background-image: url("../images/nav_icons/more_active.png");
+}
+#more.nav-item.active-icon {
+    -fx-background-image: url("../images/nav_icons/more_active.png") !important;
+}
+#more.nav-item.active-icon:pressed {
+    -fx-background-image: url("../images/nav_icons/more.png") !important;
+}
+
+#navSecondary > #mute.nav-item {
+    -fx-background-image: url("../images/nav_icons/mute.png");
+}
+#navSecondary > #mute.nav-item:hover {
+    -fx-background-image: url("../images/nav_icons/mute_hover.png");
+}
+#navSecondary > #mute.nav-item:focused {
+    -fx-background-image: url("../images/nav_icons/mute_active.png");
+}
+#mute.nav-item.active-icon {
+    -fx-background-image: url("../images/nav_icons/mute_active.png") !important;
+}
+#mute.nav-item.active-icon:pressed {
+    -fx-background-image: url("../images/nav_icons/mute.png") !important;
+}
+
+#navSecondary > #settings.nav-item {
+    -fx-background-image: url("../images/nav_icons/settings.png");
+}
+#navSecondary > #settings.nav-item:hover {
+    -fx-background-image: url("../images/nav_icons/settings_hover.png");
+}
+#navSecondary > #settings.nav-item:focused {
+    -fx-background-image: url("../images/nav_icons/settings_active.png");
+}
+#settings.nav-item.active-icon {
+    -fx-background-image: url("../images/nav_icons/settings_active.png") !important;
+}
+#settings.nav-item.active-icon:pressed {
+    -fx-background-image: url("../images/nav_icons/settings.png") !important;
+}

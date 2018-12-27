@@ -60,7 +60,7 @@
     -fx-background-radius: 0 0 5px 5px;
 }
 #usernameInput {
-    -fx-background-image: url("images/custom_images/login_text_field_bg.png");
+    -fx-background-image: url("../images/custom_images/login_text_field_bg.png");
     -fx-background-size: 200px auto;
     -fx-background-position: bottom;
     -fx-background-repeat: no-repeat;
@@ -69,14 +69,14 @@
     -fx-background-size: 200px 2px;
 }
 #nicknameInput {
-    -fx-background-image: url("images/custom_images/login_text_field_bg.png");
+    -fx-background-image: url("../images/custom_images/login_text_field_bg.png");
     -fx-background-size: 200px 2px;
     -fx-background-position: bottom;
     -fx-background-repeat: no-repeat;
 }
 #passwordInput {
     -fx-font-size: 1em;
-    -fx-background-image: url("images/custom_images/login_text_field_bg.png");
+    -fx-background-image: url("../images/custom_images/login_text_field_bg.png");
     -fx-background-size: 200px auto;
     -fx-background-position: top;
     -fx-background-repeat: no-repeat;

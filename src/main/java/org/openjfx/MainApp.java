@@ -15,16 +15,16 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws Exception
     {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("scene.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/scene.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root, 390, 660);
         // Sends stage to FXMLController.java and initializes
         // handling when the window unfocuses.
         ((FXMLController) loader.getController()).setStage(stage);
-        scene.getStylesheets().add(getClass().getResource("titlebar.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("colors.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("nav.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/org/openjfx/css/titlebar.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/org/openjfx/css/colors.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/org/openjfx/css/styles.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/org/openjfx/css/nav.css").toExternalForm());
         // Required to round the window borders
         scene.setFill(Color.TRANSPARENT);
         stage.initStyle(StageStyle.TRANSPARENT);

@@ -21,6 +21,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
@@ -93,6 +95,7 @@ public class FXMLController {
         }
         MenuBar menuBar = new MenuBar();
         menuBar.useSystemMenuBarProperty().set(true);
+        //layout.setVisible(false);
         login.setVisible(false);
         login();
         nicknameInput.setVisible(false);
@@ -329,28 +332,23 @@ public class FXMLController {
                 if (isCurrentUser) {
                     // For adding current user's information
                     friendVCard = connection.getUserVCard();
-                    friendName.setText(friendVCard.getField("Name"));
                 } else {
                     RosterEntry friend = (RosterEntry) iter.next();
-                    friendName.setText(friend.getName());
                     friendVCard = connection.getVCard(friend.getJid().asEntityBareJidIfPossible());
                 }
-
-                ImageView friendAvatar;
-                if (friendVCard.getAvatar() == null) {
-                    friendAvatar = new ImageView(new Image(getClass().getResourceAsStream("images/custom_images/default_friend_avatar_circle.png")));
-                    System.out.println("NOTHING!");
-                } else {
-                    friendAvatar = new ImageView(new Image(new ByteArrayInputStream(friendVCard.getAvatar())));
-                    System.out.println("SOMETHING!");
-                }
-                friendAvatar.setFitWidth(40);
-                friendAvatar.setPreserveRatio(true);
+                //friendName.setText(friendVCard.getField("Name"));
+                /* TESTING PURPOSES ONLY! */
+                friendName.setText(friendVCard.getNickName());
+                /* END OF TESTING CODE */
+                Circle friendAvatar = new Circle();
+                friendAvatar.setFill(new ImagePattern(new Image(new ByteArrayInputStream(friendVCard.getAvatar()))));
+                System.out.println("SOMETHING!");
+                friendAvatar.setRadius(25);
                 BorderPane friendAvatarContainer = new BorderPane(friendAvatar);
                 friendAvatarContainer.getStyleClass().add("friend-avatar");
                 friendAvatarContainer.setOnMousePressed((MouseEvent m) -> {
                     try {
-                        FXMLLoader userInfoLoader = new FXMLLoader(getClass().getResource("user_info.fxml"));
+                        FXMLLoader userInfoLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/user_info.fxml"));
                         Parent userInfoRoot = userInfoLoader.load();
                         Scene userInfoScene = new Scene(userInfoRoot, 390, 660);
                         Stage userInfoStage = new Stage();
@@ -374,13 +372,13 @@ public class FXMLController {
                             friendInfo.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), true);
                         } else if (m.getClickCount() == 2) {
                             try {
-                                FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("chatroom.fxml"));
+                                FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/chatroom.fxml"));
                                 Parent chatRoot = chatLoader.load();
                                 Scene chatScene = new Scene(chatRoot, 390, 660);
                                 Stage chatStage = new Stage();
-                                ((ChatController) chatLoader.getController()).setStage(chatStage);
-                                chatScene.getStylesheets().add(getClass().getResource("titlebar.css").toExternalForm());
-                                chatScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+                                ((ChatController) chatLoader.getController()).setupChat(chatStage, friendVCard);
+                                chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/titlebar.css").toExternalForm());
+                                chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/chatroom.css").toExternalForm());
                                 chatScene.setFill(Color.TRANSPARENT);
                                 chatStage.initStyle(StageStyle.TRANSPARENT);
                                 chatStage.setScene(chatScene);
@@ -453,7 +451,7 @@ public class FXMLController {
         rt.play();
         try {
             //connection.login(usernameInput.getText(), passwordInput.getText());
-            connection.login("test1", "test1");
+            connection.login("test5", "lololol000");
             rt.stop();
             viewLayout();
         } catch (Exception e) {

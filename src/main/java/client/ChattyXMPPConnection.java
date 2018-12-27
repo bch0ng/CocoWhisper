@@ -2,6 +2,7 @@ package client;
 
 import java.io.*;
 import java.lang.Error;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,7 +91,21 @@ public class ChattyXMPPConnection
             // attributes.put("Name", name);
             // Put attributes as 3rd parameter (after password)
             accManager.createAccount(Localpart.from(username), password);
-            login(username, password, name);
+            try {
+                connection.login(username, password);
+                userVCard = vcManager.loadVCard(connection.getUser().asEntityBareJid());
+                if (name == null) {
+                    userVCard.setField("Name", username);
+                } else {
+                    System.out.println(name);
+                    userVCard.setField("Name", name);
+                }
+                userVCard.setAvatar(getClass().getResource("/org/openjfx/images/custom_images/default_friend_avatar_circle.png"));
+                vcManager.saveVCard(userVCard);
+            } catch(Exception e) {
+                e.printStackTrace();
+                throw new Exception("Incorrect Login provided.");
+            }
         } catch(XMPPException e) {
             e.printStackTrace();
             throw new Exception(e.getMessage());
@@ -98,19 +113,9 @@ public class ChattyXMPPConnection
     }
 
     public void login(String username, String password) throws Exception {
-        login(username, password, null);
-    }
-
-    private void login (String username, String password, String name) throws Exception{
         try {
             connection.login(username, password);
             userVCard = vcManager.loadVCard(connection.getUser().asEntityBareJid());
-            if (name == null) {
-                userVCard.setField("Name", username);
-            } else {
-                userVCard.setField("Name", name);
-            }
-
         } catch(Exception e) {
             e.printStackTrace();
             throw new Exception("Incorrect Login provided.");
