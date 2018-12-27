@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?fx:include source="user_info.fxml" ?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<BorderPane fx:id="userInfoContainer"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.openjfx.UserInfoController"
+            prefHeight="300.0" prefWidth="500.0">
+    <center>
+        <VBox>
+            <!--<ImageView>BACKGROUND</ImageView>-->
+            <VBox>
+                <VBox>
+                    <!--<ImageView>USER IMAGE</ImageView>-->
+                    <Label fx:id="userInfoName"></Label>
+                </VBox>
+                <HBox>
+                    <VBox>
+                        <!--<ImageView>CHAT ICON</ImageView>-->
+                        <Label>Chat</Label>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

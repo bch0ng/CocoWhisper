@@ -7,20 +7,34 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.mam.MamManager;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
+import org.jxmpp.jid.EntityBareJid;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -33,10 +47,6 @@ public class FXMLController {
     private static final String UNFOCUSED_DECO_PATH = "images/titlebar_icons/medium/unfocused.png";
 
     private Stage stage;            // Stage given by MainApp.java
-    private boolean isFocused;      // True if window is focused; else false
-    private boolean isMaximized;    // True if window is bordered fullscreen, else false
-    private double oldWindowX;      // x-position of window on screen (in px)
-    private double oldWindowY;      // y-position of window on screen (in px)
     private ChattyXMPPConnection connection;
     private double xOffset = 0; // x-location of window
     private double yOffset = 0; // y-location of window
@@ -47,11 +57,6 @@ public class FXMLController {
 
     // CSS ID's used in scene.fxml
     @FXML private BorderPane titleCont;
-    @FXML private ToolBar toolbar;
-    @FXML private HBox titlebar;
-    @FXML private Button closeButton;
-    @FXML private Button minimizeButton;
-    @FXML private Button resizeButton;
     @FXML private VBox nav;
     @FXML private BorderPane layout;
     @FXML private VBox leftMainNav;
@@ -74,16 +79,22 @@ public class FXMLController {
     @FXML private VBox inputFields;
     @FXML private Label passwordHint;
 
+    @FXML private BorderPane userInfoContainer;
+    @FXML private Label userInfoName;
+
+    @FXML private TitlebarController titlebarController;
+    @FXML private AnchorPane titlebar;
+
     public void initialize() {
         try {
             connection = new ChattyXMPPConnection();
         } catch (Exception e) {
-            e.getMessage();
+            e.printStackTrace();
         }
         MenuBar menuBar = new MenuBar();
         menuBar.useSystemMenuBarProperty().set(true);
-        this.isMaximized = false;
-        layout.setVisible(false);
+        login.setVisible(false);
+        login();
         nicknameInput.setVisible(false);
         nicknameInput.setManaged(false);
         passwordInputChecker.setVisible(false);
@@ -93,6 +104,8 @@ public class FXMLController {
         passwordHint.setVisible(false);
         passwordHint.setManaged(false);
         //login();
+        titlebar.setPickOnBounds(false);
+        titlebar.toFront();
         titleCont.setPickOnBounds(false);
         titleCont.toFront();
 
@@ -152,6 +165,7 @@ public class FXMLController {
                 }
             });
         }
+        /*
         toolbar.setOnMousePressed((MouseEvent event) -> {
             xOffset = event.getSceneX();
             yOffset = event.getSceneY();
@@ -160,6 +174,7 @@ public class FXMLController {
             stage.setX(event.getScreenX() - xOffset);
             stage.setY(event.getScreenY() - yOffset);
         });
+        */
     }
 
     public void viewRegister() {
@@ -236,94 +251,6 @@ public class FXMLController {
         }
     }
 
-    /**
-     * Changes decorations to light-gray when window is
-     * not focused, and back to default colors when focused.
-     */
-    private void handleUnfocusedStage() {
-        this.stage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-                this.isFocused = isNowFocused;
-                if (!isNowFocused) {
-                    // Changing all three decorations to light gray
-                    closeButton.getStyleClass().add("unfocused-button");
-                    minimizeButton.getStyleClass().add("unfocused-button");
-                    resizeButton.getStyleClass().add("unfocused-button");
-                } else {
-                    // Reverting all three decorations back to default
-                    closeButton.getStyleClass().remove("unfocused-button");
-                    minimizeButton.getStyleClass().remove("unfocused-button");
-                    resizeButton.getStyleClass().remove("unfocused-button");
-                }
-            });
-        titlebar.setOnMouseEntered((MouseEvent t) -> {
-            if (!this.stage.isFocused()) {
-                closeButton.getStyleClass().remove("unfocused-button");
-                minimizeButton.getStyleClass().remove("unfocused-button");
-                resizeButton.getStyleClass().remove("unfocused-button");
-            }
-            closeButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("active"), true);
-            minimizeButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("active"), true);
-            resizeButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("active"), true);
-        });
-        titlebar.setOnMouseExited((MouseEvent t) -> {
-            if (!this.stage.isFocused()) {
-                closeButton.getStyleClass().add("unfocused-button");
-                minimizeButton.getStyleClass().add("unfocused-button");
-                resizeButton.getStyleClass().add("unfocused-button");
-            }
-            closeButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("active"), false);
-            minimizeButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("active"), false);
-            resizeButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("active"), false);
-        });
-    }
-
-    /**
-     * Closes window when close decoration is pressed.
-     *
-     * @param event mouse press by the user
-     */
-    public void handleCloseButtonAction(ActionEvent event) {
-        this.stage.close();
-    }
-
-    /**
-     * Minimizes window when the close decoration is pressed.
-     *
-     * @param event mouse press by the user
-     */
-    public void handleMinimizeButtonAction(ActionEvent event) {
-        this.stage.toBack();
-        this.stage.setIconified(true);
-    }
-
-    /**
-     * Resizes window (to windowed fullscreen or back to original size)
-     * when the resize decoration is pressed.
-     *
-     * @param event mouse press by the user
-     */
-    public void handleResizeButtonAction(ActionEvent event) {
-        if (!isMaximized) {
-            this.isMaximized = true;
-            // Remembers old window position (for when resize decoration is pressed again)
-            this.oldWindowX = this.stage.getX();
-            this.oldWindowY = this.stage.getY();
-
-            // Resizing window be windows fullscreen
-            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-            this.stage.setX(bounds.getMinX());
-            this.stage.setY(bounds.getMinY());
-            this.stage.setWidth(bounds.getWidth());
-            this.stage.setHeight(bounds.getHeight());
-        } else {
-            this.isMaximized = false;
-            // Revert back to smaller window
-            this.stage.setX(this.oldWindowX);
-            this.stage.setY(this.oldWindowY);
-            this.stage.setWidth(390);
-            this.stage.setHeight(660);
-        }
-    }
 
     /**
      * Creates a reference to the stage
@@ -335,7 +262,8 @@ public class FXMLController {
     public void setStage(Stage stage)
     {
         this.stage = stage;
-        this.handleUnfocusedStage();
+        titlebarController.setStage(stage);
+        //this.handleUnfocusedStage();
         ReadOnlyDoubleProperty stageHeight = this.stage.heightProperty();
         ReadOnlyDoubleProperty stageWidth = this.stage.widthProperty();
         layout.prefHeightProperty().bind(stageHeight);
@@ -373,39 +301,105 @@ public class FXMLController {
         activeIcon(friends);
         view.getChildren().clear();
         Label title = new Label();
+        Label friendCount = new Label();
         title.getStyleClass().add("title");
         try {
             Collection<RosterEntry> friends = connection.roster();
-            title.setText("Friends " + friends.size());
-            view.getChildren().addAll(title, new Separator());
+            title.setText("Friends");
+            friendCount.setText(Integer.toString(friends.size()));
+            friendCount.getStyleClass().add("friend-count-title");
+            HBox titleContainer = new HBox(title, friendCount);
+            titleContainer.setAlignment(Pos.CENTER_LEFT);
+            view.getChildren().addAll(titleContainer, new Separator());
             VBox friendsList = new VBox();
             Label myProfileTitle = new Label("My Profile");
             myProfileTitle.getStyleClass().add("sub-title");
             friendsList.getChildren().addAll(myProfileTitle, new Separator());
             Iterator iter = friends.iterator();
-            boolean friend = false;
-            while (iter.hasNext()) {
+            boolean isCurrentUser = true;   // Current user will always be first "friend" printed
+            while (isCurrentUser || iter.hasNext()) {
+                //VBox friendInfoContainer = new VBox();
                 HBox friendInfo = new HBox();
-                if (!friend) {
+                friendInfo.setAlignment(Pos.CENTER_LEFT);
+                friendInfo.setSpacing(10);
+                friendInfo.getStyleClass().add("friend-container");
+                Label friendName = new Label();
+                friendName.getStyleClass().add("friend-name");
+                VCard friendVCard;
+                if (isCurrentUser) {
                     // For adding current user's information
-                    try {
-                        friendInfo.getChildren().add(new Label(connection.getUserVCard().getField("Name")));
-                    } catch (Exception e) {
-                        System.out.println("Could not get current user's VCard");
-                    }
-                    friend = true;
+                    friendVCard = connection.getUserVCard();
+                    friendName.setText(friendVCard.getField("Name"));
                 } else {
-                    friendInfo.getChildren().add(new Label(((RosterEntry) iter.next()).getName()));
+                    RosterEntry friend = (RosterEntry) iter.next();
+                    friendName.setText(friend.getName());
+                    friendVCard = connection.getVCard(friend.getJid().asEntityBareJidIfPossible());
                 }
-                friendInfo.getStyleClass().add("friendBtn");
-                friendInfo.setOnMouseClicked((MouseEvent m) -> {
-                    if (currentlySelectedFriend != null) {
-                        currentlySelectedFriend.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), false);
+
+                ImageView friendAvatar;
+                if (friendVCard.getAvatar() == null) {
+                    friendAvatar = new ImageView(new Image(getClass().getResourceAsStream("images/custom_images/default_friend_avatar_circle.png")));
+                    System.out.println("NOTHING!");
+                } else {
+                    friendAvatar = new ImageView(new Image(new ByteArrayInputStream(friendVCard.getAvatar())));
+                    System.out.println("SOMETHING!");
+                }
+                friendAvatar.setFitWidth(40);
+                friendAvatar.setPreserveRatio(true);
+                BorderPane friendAvatarContainer = new BorderPane(friendAvatar);
+                friendAvatarContainer.getStyleClass().add("friend-avatar");
+                friendAvatarContainer.setOnMousePressed((MouseEvent m) -> {
+                    try {
+                        FXMLLoader userInfoLoader = new FXMLLoader(getClass().getResource("user_info.fxml"));
+                        Parent userInfoRoot = userInfoLoader.load();
+                        Scene userInfoScene = new Scene(userInfoRoot, 390, 660);
+                        Stage userInfoStage = new Stage();
+                        userInfoStage.setScene(userInfoScene);
+                        userInfoStage.show();
+                    } catch (Exception e) {
+                        System.out.println("HELLO!");
+                        e.printStackTrace();
                     }
-                    currentlySelectedFriend = friendInfo;
-                    friendInfo.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), true);
+                    //viewChatRoom();
+                });
+                friendInfo.getChildren().addAll(friendAvatarContainer, friendName);
+                //friendInfoContainer.getChildren().add(friendInfo);
+                friendInfo.setOnMouseClicked((MouseEvent m) -> {
+                    if(m.getButton().equals(MouseButton.PRIMARY)){
+                        if (m.getClickCount() == 1) {
+                            if (currentlySelectedFriend != null) {
+                                currentlySelectedFriend.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), false);
+                            }
+                            currentlySelectedFriend = friendInfo;
+                            friendInfo.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), true);
+                        } else if (m.getClickCount() == 2) {
+                            try {
+                                FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("chatroom.fxml"));
+                                Parent chatRoot = chatLoader.load();
+                                Scene chatScene = new Scene(chatRoot, 390, 660);
+                                Stage chatStage = new Stage();
+                                ((ChatController) chatLoader.getController()).setStage(chatStage);
+                                chatScene.getStylesheets().add(getClass().getResource("titlebar.css").toExternalForm());
+                                chatScene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+                                chatScene.setFill(Color.TRANSPARENT);
+                                chatStage.initStyle(StageStyle.TRANSPARENT);
+                                chatStage.setScene(chatScene);
+                                chatStage.show();
+                            } catch (Exception e) {
+                                System.out.println("HI");
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                 });
                 friendsList.getChildren().add(friendInfo);
+                // Creates the Friends label and subtitle only once (after user's profile)
+                if (isCurrentUser) {
+                    Label friendsSubTitle = new Label("Friends");
+                    friendsSubTitle.getStyleClass().add("sub-title");
+                    friendsList.getChildren().addAll(friendsSubTitle, new Separator());
+                    isCurrentUser = false;
+                }
             }
             view.getChildren().add(friendsList);
         } catch(Exception e) {
@@ -415,9 +409,26 @@ public class FXMLController {
         }
     }
 
+    public void viewChatRoom() {
+
+    }
+
     public void viewChatList() {
         clearActiveIcons();
         activeIcon(chats);
+        view.getChildren().clear();
+        Label title = new Label();
+        Label friendCount = new Label();
+        title.getStyleClass().add("title");
+        title.setText("Chats");
+        HBox titleContainer = new HBox(title);
+        titleContainer.setAlignment(Pos.CENTER_LEFT);
+        view.getChildren().addAll(titleContainer, new Separator());
+        try {
+            MamManager mamManager = connection.getMamManager();
+        } catch (Exception e) {
+
+        }
     }
 
     public void viewMore() {
@@ -441,11 +452,13 @@ public class FXMLController {
         rt.setInterpolator(Interpolator.LINEAR);
         rt.play();
         try {
-            connection.login(usernameInput.getText(), passwordInput.getText());
+            //connection.login(usernameInput.getText(), passwordInput.getText());
+            connection.login("test1", "test1");
             rt.stop();
             viewLayout();
         } catch (Exception e) {
-            errorMessage(e.getMessage());
+            e.printStackTrace();
+            //errorMessage(e.getMessage());
             rt.stop();
             cocoLoginLogo.setRotate(0);
             usernameInput.disableProperty().setValue(false);
@@ -481,4 +494,6 @@ public class FXMLController {
         viewFriendsList();
 
     }
+
+
 }

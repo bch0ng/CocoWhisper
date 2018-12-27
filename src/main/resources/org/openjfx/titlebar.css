@@ -1,4 +1,8 @@
-
+ToolBar,
+.toolbar-button,
+Button.nav-item {
+    -fx-background-color: transparent;
+}
 .tool-bar #titlebar {
     -fx-spacing: 10px;
 }

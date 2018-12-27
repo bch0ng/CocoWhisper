@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.openjfx.ChatController" prefHeight="400.0" prefWidth="600.0">
+    <BorderPane fx:id="titleCont">
+        <top>
+            <fx:include fx:id="titlebar" source="titlebar.fxml" />
+        </top>
+    </BorderPane>
+    <StackPane>
+        <BorderPane>
+            <top>
+                <Label>CHATROOM NAME + FRIEND</Label>
+            </top>
+            <center>
+                <Label>CHAT HISTORY</Label>
+            </center>
+            <bottom>
+                <Label>CHAT SEND</Label>
+            </bottom>
+        </BorderPane>
+    </StackPane>
+
+</StackPane>

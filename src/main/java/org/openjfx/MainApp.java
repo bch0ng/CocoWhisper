@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -33,13 +34,6 @@ public class MainApp extends Application {
 
     public static void main(String[] args) throws Exception
     {
-        // For testing purposes
-        //Client c = new Client();
-        //c.main(args);
-
-        // Connecting GUI to client package.
-        //ChattyXMPPConnection x = new ChattyXMPPConnection("test1", "testing1234");
-        //System.out.println("Success!");
         Application.launch(args);
     }
 
