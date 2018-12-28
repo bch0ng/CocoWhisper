@@ -34,7 +34,7 @@
                         <VBox spacing="30" alignment="CENTER">
                             <ImageView fx:id="cocoLoginLogo" layoutX="29.0" layoutY="44.0" fitHeight="224.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
                                 <image>
-                                    <Image url="@images/custom_images/new_coco_logo_v2.png" />
+                                    <Image url="@../images/custom_images/new_coco_logo_v2.png" />
                                 </image>
                             </ImageView>
                             <VBox alignment="CENTER">
@@ -80,6 +80,7 @@
             </left>
             <center>
                 <VBox fx:id="view">
+                    <HBox fx:id="titleContainer" />
                     <Label styleClass="title">Hello world!</Label>
                     <Separator />
                 </VBox>

@@ -23,15 +23,27 @@ public class TitlebarController {
     private double oldWindowX;
     private double oldWindowY;
     private boolean isFocused;
+    private double xOffset;
+    private double yOffset;
 
     public void initialize() {
         isMaximized = false;
+        xOffset = 0;
+        yOffset = 0;
     }
 
     public void setStage(Stage stage) {
         this.stage = stage;
-        System.out.println("TITLE: " + this.stage);
         handleUnfocusedStage();
+        toolbar.setOnMousePressed((MouseEvent event) -> {
+            System.out.println("HEY!");
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
+        });
+        toolbar.setOnMouseDragged((MouseEvent event) -> {
+            stage.setX(event.getScreenX() - xOffset);
+            stage.setY(event.getScreenY() - yOffset);
+        });
     }
     /**
      * Changes decorations to light-gray when window is
@@ -100,6 +112,17 @@ public class TitlebarController {
      * @param event mouse press by the user
      */
     public void handleResizeButtonAction(ActionEvent event) {
+        if(!stage.isFullScreen()) {
+            titlebar.setVisible(false);
+            stage.setFullScreen(true);
+            stage.fullScreenProperty().addListener((obs, oldVal, newVal) -> {
+                if (!stage.isFullScreen()) {
+                    titlebar.setVisible(true);
+                    stage.setFullScreen(false);
+                }
+            });
+        }
+        /*
         if (!isMaximized) {
             this.isMaximized = true;
             // Remembers old window position (for when resize decoration is pressed again)
@@ -120,6 +143,7 @@ public class TitlebarController {
             this.stage.setWidth(390);
             this.stage.setHeight(660);
         }
+        */
     }
 
 

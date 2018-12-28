@@ -7,26 +7,24 @@
 <?import javafx.scene.layout.*?>
 
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.openjfx.ChatController" prefHeight="400.0" prefWidth="600.0">
-    <BorderPane fx:id="titleCont">
-        <top>
-            <fx:include fx:id="titlebar" source="titlebar.fxml" />
-        </top>
-    </BorderPane>
+    <fx:include fx:id="titlebar" source="titlebar.fxml" />
     <StackPane>
         <BorderPane>
             <top>
-                <VBox fx:id="chatroomInfo" />
+                <VBox alignment="CENTER">
+                    <VBox fx:id="chatroomInfo" />
+                </VBox>
             </top>
             <center>
-                <VBox fx:id="viewChat">
-
-                </VBox>
+                <ScrollPane fx:id="viewChat" vvalue="1">
+                    <VBox fx:id="chats" spacing="15"  HBox.hgrow="ALWAYS" />
+                </ScrollPane>
             </center>
             <bottom>
                 <HBox fx:id="sendMsg" spacing="20">
                     <TextArea fx:id="msgContainer" wrapText="true" />
                     <HBox alignment="CENTER">
-                        <Button fx:id="msgSubmitBtn">Send</Button>
+                        <Button fx:id="msgSubmitBtn" onAction="#sendMsg">Send</Button>
                     </HBox>
                 </HBox>
             </bottom>

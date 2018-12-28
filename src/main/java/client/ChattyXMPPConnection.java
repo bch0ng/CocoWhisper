@@ -16,6 +16,7 @@ import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
@@ -23,10 +24,13 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqprivate.PrivateDataManager;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.mam.MamManager;
+import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
+import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.jxmpp.jid.parts.Localpart;
@@ -42,6 +46,7 @@ public class ChattyXMPPConnection
     private Roster roster;
     private VCard userVCard;
     private Dotenv dotenv;
+    private DeliveryReceiptManager drManager;
 
     public ChattyXMPPConnection(String username, String password) throws Exception
     {
@@ -74,6 +79,8 @@ public class ChattyXMPPConnection
         accManager.sensitiveOperationOverInsecureConnection(!dotenv.get("SECURITY_ENABLED").equals("true"));
         vcManager = VCardManager.getInstanceFor(connection);
         mamManager = MamManager.getInstanceFor(connection);
+        drManager = DeliveryReceiptManager.getInstanceFor(connection);
+        drManager.autoAddDeliveryReceiptRequests();
         try {
             connection.connect();
         } catch(Exception e) {
@@ -102,6 +109,7 @@ public class ChattyXMPPConnection
                 }
                 userVCard.setAvatar(getClass().getResource("/org/openjfx/images/custom_images/default_friend_avatar_circle.png"));
                 vcManager.saveVCard(userVCard);
+                //mamManager.enableMamForAllMessages();
             } catch(Exception e) {
                 e.printStackTrace();
                 throw new Exception("Incorrect Login provided.");
@@ -153,8 +161,11 @@ public class ChattyXMPPConnection
         return mamManager;
     }
 
+    public DeliveryReceiptManager getDrManager() { return drManager; }
+
     public Chat createChat(BareJid chatWith) throws Exception
     {
+        /*
         chatManager.addIncomingListener(new IncomingChatMessageListener() {
             @Override
             public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
@@ -162,6 +173,7 @@ public class ChattyXMPPConnection
                 System.out.println(jidString.substring(0, jidString.indexOf("@"))+ ": " + message.getBody());
             }
         });
+        */
         EntityBareJid jid = JidCreate.entityBareFrom(chatWith);
         System.out.println(jid);
         if (!roster.contains(jid)) {
@@ -176,6 +188,9 @@ public class ChattyXMPPConnection
         return accManager;
     }
 
+    public EntityBareJid getLoggedInUserJid() {
+        return connection.getUser().asEntityBareJid();
+    }
     public String getLoggedInUserName() throws Exception {
         return accManager.getAccountAttribute("name");
     }

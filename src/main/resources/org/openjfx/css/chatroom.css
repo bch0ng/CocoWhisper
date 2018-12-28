@@ -2,20 +2,28 @@
     -fx-background-color: #fff;
     -fx-background-radius: 5px;
     -fx-font-family: "sans-serif";
-    -fx-font-size: 1em;
+    -fx-font-size: 1.2em;
+    -fx-border-color: rgba(0, 0, 0, 0.1);
+    -fx-border-radius: 5px;
 }
 #chatroomInfo {
     -fx-padding: 20px;
     -fx-border-style: none none solid none;
-    -fx-border-color: transparent transparent black transparent;
+    -fx-border-color: transparent transparent rgba(0,0,0,0.1) transparent;
     -fx-border-width: 0 0 2px 0;
 }
-.title {
-    -fx-font-weight: bold;
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+#viewChat {
+    -fx-background-color: #fff2f0;
+}
+#chats {
+    -fx-padding: 10px 0 10px 10px;
 }
 #sendMsg {
     -fx-border-style: solid none none none;
-    -fx-border-color: black transparent transparent transparent;
+    -fx-border-color: rgba(0,0,0,0.1) transparent transparent transparent;
     -fx-border-width: 2px 0 0 0;
 }
 .text-area {
@@ -48,7 +56,21 @@
 }
 #msgSubmitBtn {
     -fx-pref-height: 80px;
-    -fx-padding: 20px;
+    -fx-font-size: 0.9em;
+}
+
+#viewChat .scroll-bar .thumb {
+    -fx-background-color: transparent;
+}
+#viewChat .scroll-bar:hover .thumb {
+    -fx-background-color:derive(black, 90%);
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+}
+#viewChat .scroll-bar .thumb:hover,
+#viewChat .scroll-bar .thumb:pressed {
+    -fx-background-color:derive(black, 70%);
+    -fx-background-insets: 0, 0, 0;
 }
 
 .scroll-bar {
@@ -91,4 +113,34 @@
 
 .track  {
     -fx-background-color:transparent;
+}
+
+.friend-message-name {
+    -fx-text-fill: #7f7f7f;
+    -fx-font-size: 0.9em;
+}
+.friend-message-text {
+    -fx-fill: #7f7f7f;
+}
+.friend-message-body {
+    -fx-font-size: 0.9em;
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-padding: 10px;
+    -fx-max-width: 175px;
+    -fx-wrap-text: true;
+}
+.user-message-text {
+    -fx-fill: white;
+}
+.user-message-body {
+    -fx-font-size: 0.9em;
+    -fx-background-color: #8d6868;
+    -fx-background-radius: 5px;
+    -fx-padding: 10px;
+    -fx-max-width: 175px;
+    -fx-wrap-text: true;
+}
+.user-message-body:pending {
+    -fx-opacity: 0.5;
 }

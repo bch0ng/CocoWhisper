@@ -80,6 +80,7 @@ public class FXMLController {
     @FXML private PasswordField passwordInputChecker;
     @FXML private VBox inputFields;
     @FXML private Label passwordHint;
+    @FXML private HBox titleContainer;
 
     @FXML private BorderPane userInfoContainer;
     @FXML private Label userInfoName;
@@ -282,6 +283,14 @@ public class FXMLController {
             stage.setX(event.getScreenX() - xOffset);
             stage.setY(event.getScreenY() - yOffset);
         });
+        titleContainer.setOnMousePressed((MouseEvent event) -> {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
+        });
+        titleContainer.setOnMouseDragged((MouseEvent event) -> {
+            stage.setX(event.getScreenX() - xOffset);
+            stage.setY(event.getScreenY() - yOffset);
+        });
     }
 
     public void doSomething() {
@@ -311,7 +320,8 @@ public class FXMLController {
             title.setText("Friends");
             friendCount.setText(Integer.toString(friends.size()));
             friendCount.getStyleClass().add("friend-count-title");
-            HBox titleContainer = new HBox(title, friendCount);
+            titleContainer.getChildren().removeAll();
+            titleContainer.getChildren().addAll(title, friendCount);
             titleContainer.setAlignment(Pos.CENTER_LEFT);
             view.getChildren().addAll(titleContainer, new Separator());
             VBox friendsList = new VBox();
@@ -329,11 +339,13 @@ public class FXMLController {
                 Label friendName = new Label();
                 friendName.getStyleClass().add("friend-name");
                 VCard friendVCard;
+                RosterEntry friend;
                 if (isCurrentUser) {
                     // For adding current user's information
+                    friend = null;
                     friendVCard = connection.getUserVCard();
                 } else {
-                    RosterEntry friend = (RosterEntry) iter.next();
+                    friend = (RosterEntry) iter.next();
                     friendVCard = connection.getVCard(friend.getJid().asEntityBareJidIfPossible());
                 }
                 //friendName.setText(friendVCard.getField("Name"));
@@ -374,9 +386,9 @@ public class FXMLController {
                             try {
                                 FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/chatroom.fxml"));
                                 Parent chatRoot = chatLoader.load();
-                                Scene chatScene = new Scene(chatRoot, 390, 660);
+                                Scene chatScene = new Scene(chatRoot, 380, 620);
                                 Stage chatStage = new Stage();
-                                ((ChatController) chatLoader.getController()).setupChat(chatStage, friendVCard);
+                                ((ChatController) chatLoader.getController()).setupChat(chatStage, chatScene, friendVCard, connection, friend);
                                 chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/titlebar.css").toExternalForm());
                                 chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/chatroom.css").toExternalForm());
                                 chatScene.setFill(Color.TRANSPARENT);
@@ -421,6 +433,14 @@ public class FXMLController {
         title.setText("Chats");
         HBox titleContainer = new HBox(title);
         titleContainer.setAlignment(Pos.CENTER_LEFT);
+        titleContainer.setOnMousePressed((MouseEvent event) -> {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
+        });
+        titleContainer.setOnMouseDragged((MouseEvent event) -> {
+            stage.setX(event.getScreenX() - xOffset);
+            stage.setY(event.getScreenY() - yOffset);
+        });
         view.getChildren().addAll(titleContainer, new Separator());
         try {
             MamManager mamManager = connection.getMamManager();
@@ -451,7 +471,7 @@ public class FXMLController {
         rt.play();
         try {
             //connection.login(usernameInput.getText(), passwordInput.getText());
-            connection.login("test5", "lololol000");
+            connection.login("test1", "lololol000");
             rt.stop();
             viewLayout();
         } catch (Exception e) {

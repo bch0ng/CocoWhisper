@@ -8,6 +8,8 @@
 }
 #view {
     -fx-text-fill: #7f7f7f;
+    -fx-border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) transparent;
+    -fx-border-radius: 0 5px 5px 0;
 }
 .title {
     -fx-label-padding: 15px 10px 15px 15px;
