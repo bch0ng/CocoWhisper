@@ -21,12 +21,18 @@
                 </ScrollPane>
             </center>
             <bottom>
+                <AnchorPane fx:id="sendMsg">
+                    <TextArea fx:id="msgContainer" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="100.0" wrapText="true" />
+                    <Button fx:id="msgSubmitBtn" AnchorPane.topAnchor="10.0" AnchorPane.rightAnchor="10.0" onAction="#sendMsg">Send</Button>
+                </AnchorPane>
+                <!--
                 <HBox fx:id="sendMsg" spacing="20">
                     <TextArea fx:id="msgContainer" wrapText="true" />
                     <HBox alignment="CENTER">
-                        <Button fx:id="msgSubmitBtn" onAction="#sendMsg">Send</Button>
+                        <Button fx:id="msgSubmitBtn" HBox.hgrow="ALWAYS" onAction="#sendMsg">Send</Button>
                     </HBox>
                 </HBox>
+                -->
             </bottom>
         </BorderPane>
     </StackPane>

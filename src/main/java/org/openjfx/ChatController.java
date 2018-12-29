@@ -2,17 +2,18 @@ package org.openjfx;
 
 import client.ChattyXMPPConnection;
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.ImagePattern;
@@ -59,6 +60,7 @@ public class ChatController {
     @FXML private ScrollPane viewChat;
     @FXML private VBox chats;
     @FXML private TextArea msgContainer;
+    @FXML private Button msgSubmitBtn;
 
     public void initialize() {
         titlebar.setPickOnBounds(false);
@@ -180,6 +182,30 @@ public class ChatController {
             TextFlow msg = (TextFlow) scene.lookup("#" + receiptId);
             msg.pseudoClassStateChanged(PseudoClass.getPseudoClass("pending"), false);
             System.out.println("Delivered!");
+        });
+
+        BooleanBinding messageEmpty = new BooleanBinding() {
+            {
+                super.bind(msgContainer.textProperty());
+            }
+            @Override
+            protected boolean computeValue()
+            {
+                return msgContainer.getText().trim().isEmpty();
+            }
+        };
+        msgSubmitBtn.disableProperty().bind(messageEmpty);
+        msgContainer.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
+                if (event.getCode().equals(KeyCode.ENTER)) {
+                    System.out.println("CONSUMED: " + event.isConsumed());
+                    if (event.isShiftDown()) {
+                        msgContainer.appendText(System.getProperty("line.separator"));
+                    } else {
+                        if (!messageEmpty.get()) {
+                            this.sendMsg();
+                        }
+                    }
+                }
         });
     }
 

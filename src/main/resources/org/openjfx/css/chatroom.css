@@ -55,8 +55,14 @@
     -fx-hbar-policy: never;
 }
 #msgSubmitBtn {
-    -fx-pref-height: 80px;
+    -fx-padding: 30px 25px;
     -fx-font-size: 0.9em;
+    -fx-background-color: #8d6868;
+    -fx-text-fill: white;
+}
+#msgSubmitBtn:disabled {
+    -fx-background-color: lightgray;
+    -fx-text-fill: #7f7f7f;
 }
 
 #viewChat .scroll-bar .thumb {

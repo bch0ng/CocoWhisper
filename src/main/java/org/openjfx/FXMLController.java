@@ -169,16 +169,6 @@ public class FXMLController {
                 }
             });
         }
-        /*
-        toolbar.setOnMousePressed((MouseEvent event) -> {
-            xOffset = event.getSceneX();
-            yOffset = event.getSceneY();
-        });
-        toolbar.setOnMouseDragged((MouseEvent event) -> {
-            stage.setX(event.getScreenX() - xOffset);
-            stage.setY(event.getScreenY() - yOffset);
-        });
-        */
     }
 
     public void viewRegister() {
