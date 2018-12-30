@@ -5,6 +5,7 @@ import java.lang.Error;
 import java.net.URL;
 import java.util.*;
 
+import jdk.internal.loader.Resource;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.SmackException.NotLoggedInException;
@@ -49,6 +50,8 @@ public class ChattyXMPPConnection
     private DeliveryReceiptManager drManager;
     private MultiUserChatManager mucManager;
     private MultiUserChat muc;
+    private EntityBareJid userJid;
+    private String userName;
 
     public ChattyXMPPConnection(String username, String password) throws Exception
     {
@@ -90,7 +93,7 @@ public class ChattyXMPPConnection
                 {
                     System.out.println("INVITED!");
                     try {
-                        muc.join(Resourcepart.from(connection.getUser().getLocalpart().toString()), password);
+                        muc.join(Resourcepart.from(userName), password);
                         System.out.println("JOINED!");
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -116,7 +119,7 @@ public class ChattyXMPPConnection
             accManager.createAccount(Localpart.from(username), password);
             try {
                 connection.login(username, password);
-                userVCard = vcManager.loadVCard(connection.getUser().asEntityBareJid());
+                userVCard = vcManager.loadVCard(userJid);
                 if (name == null) {
                     userVCard.setField("Name", username);
                 } else {
@@ -139,7 +142,9 @@ public class ChattyXMPPConnection
     public void login(String username, String password) throws Exception {
         try {
             connection.login(username, password);
-            userVCard = vcManager.loadVCard(connection.getUser().asEntityBareJid());
+            userJid = connection.getUser().asEntityBareJid();
+            userVCard = vcManager.loadVCard(userJid);
+            userName = userJid.getLocalpart().toString();
         } catch(Exception e) {
             e.printStackTrace();
             throw new Exception("Incorrect Login provided.");
@@ -181,30 +186,46 @@ public class ChattyXMPPConnection
 
     public MultiUserChatManager getMucManager() { return mucManager; }
 
-    public MultiUserChat createOrJoinMuc(BareJid chatWith) throws Exception {
-        EntityBareJid jid = JidCreate.entityBareFrom(connection.getUser().getLocalpart().toString() + "+" + chatWith.getLocalpartOrNull().toString() + "@conference." + dotenv.get("XMPP_DOMAIN"));
-        muc = mucManager.getMultiUserChat(jid);
+    public MultiUserChat createOrJoinMuc(BareJid friend) throws Exception {
+        List<BareJid> participants = new ArrayList<>();
+        participants.add(friend);
+        return createOrJoinMuc(participants);
+    }
+
+    public MultiUserChat createOrJoinMuc(List<BareJid> participants) throws Exception {
+        List<String> owners = new ArrayList<>();
+                     owners.add(userJid.toString());
+
+        // Adds self to participants list and then sorts alphabetically
+        participants.add(userJid.asBareJid());
+        participants.sort(Comparator.comparing(BareJid::toString));
+        String mucName = participants.remove(0).toString().replaceAll("@", "!").replaceAll("\\.", "-"); // Fencepost approach
+        for(BareJid friend : participants) {
+            owners.add(friend.toString());
+            mucName += ("+" + friend.toString().replaceAll("@", "!").replaceAll("\\.", "-"));
+        }
+        EntityBareJid chatJid = JidCreate.entityBareFrom(mucName + "@conference." + dotenv.get("XMPP_DOMAIN"));
+        muc = mucManager.getMultiUserChat(chatJid);
         try {
-            muc.create(Resourcepart.from(connection.getUser().getLocalpart().toString() + "+" + chatWith.getLocalpartOrNull().toString()));
+            muc.create(Resourcepart.from(userName));
             System.out.println("CREATED");
-            List<String> owners = new ArrayList<>();
-            owners.add(connection.getUser().toString());
-            owners.add(chatWith.toString());
             Form form = muc.getConfigurationForm();
             Form answerForm = form.createAnswerForm();
-            answerForm.setAnswer("muc#roomconfig_roomowners", owners);
-            answerForm.setAnswer("muc#roomconfig_persistentroom", true);
-            answerForm.setAnswer("muc#roomconfig_allowinvites", true);
-            answerForm.setAnswer("muc#roomconfig_membersonly", true);
-            answerForm.setAnswer("muc#roomconfig_publicroom", false);
-            answerForm.setAnswer("muc#roomconfig_passwordprotectedroom", true);
-            answerForm.setAnswer("muc#roomconfig_roomsecret", Integer.toString(muc.hashCode()));
+                 answerForm.setAnswer("muc#roomconfig_roomowners", owners);
+                 answerForm.setAnswer("muc#roomconfig_persistentroom", true);
+                 answerForm.setAnswer("muc#roomconfig_allowinvites", true);
+                 answerForm.setAnswer("muc#roomconfig_membersonly", true);
+                 answerForm.setAnswer("muc#roomconfig_publicroom", false);
+                 answerForm.setAnswer("muc#roomconfig_passwordprotectedroom", true);
+                 answerForm.setAnswer("muc#roomconfig_roomsecret", Integer.toString(muc.hashCode()));
             muc.sendConfigurationForm(answerForm);
-            muc.join(Resourcepart.from(connection.getUser().getLocalpart().toString()), Integer.toString(muc.hashCode()));
-            muc.invite(chatWith.asEntityBareJidIfPossible(), "Invited");
+            //muc.join(Resourcepart.from(userName), Integer.toString(muc.hashCode()));
+            for (BareJid friend : participants) {
+                muc.invite(friend.asEntityBareJidIfPossible(), "Invited");
+            }
         } catch (Exception e) {
             try {
-                muc.join(Resourcepart.from(connection.getUser().getLocalpart().toString()), Integer.toString(muc.hashCode()));
+                muc.join(Resourcepart.from(userName), Integer.toString(muc.hashCode()));
                 System.out.println("JOINED");
             } catch (Exception ex) {
                 e.printStackTrace();
@@ -213,7 +234,7 @@ public class ChattyXMPPConnection
         return muc;
     }
 
-    public Chat createChat(BareJid chatWith) throws Exception
+    public Chat createChat(BareJid friend) throws Exception
     {
         /*
         chatManager.addIncomingListener(new IncomingChatMessageListener() {
@@ -224,7 +245,7 @@ public class ChattyXMPPConnection
             }
         });
         */
-        EntityBareJid jid = JidCreate.entityBareFrom(chatWith);
+        EntityBareJid jid = JidCreate.entityBareFrom(friend);
         System.out.println(jid);
         if (!roster.contains(jid)) {
             throw new Exception("User not found!");
@@ -239,10 +260,11 @@ public class ChattyXMPPConnection
     }
 
     public EntityBareJid getLoggedInUserJid() {
-        return connection.getUser().asEntityBareJid();
+        return userJid;
     }
     public String getLoggedInUserName() throws Exception {
-        return accManager.getAccountAttribute("name");
+        //return accManager.getAccountAttribute("name");
+        return userName;
     }
 
     public void disconnect()

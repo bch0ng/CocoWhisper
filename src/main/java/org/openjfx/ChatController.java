@@ -37,6 +37,7 @@ import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
+import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.xdata.Form;
 import org.jxmpp.jid.EntityBareJid;
@@ -52,7 +53,7 @@ public class ChatController {
 
     private Stage stage;
     private Chat chat;
-    private VCard friendVCard;
+    //private VCard friendVCard;
     private double xOffset;
     private double yOffset;
     private RosterEntry friend;
@@ -87,10 +88,10 @@ public class ChatController {
         });
     }
 
-    public void setupChat(Stage stage, Scene scene, VCard friendVCard, ChattyXMPPConnection connection, RosterEntry friend) {
+    public void setupChat(Stage stage, Scene scene, VCard friendVCardOLD, ChattyXMPPConnection connection, RosterEntry friend) {
         this.stage = stage;
         this.scene = scene;
-        this.friendVCard = friendVCard;
+        //this.friendVCard = friendVCard;
         this.friend = friend;
         this.connection = connection;
         this.drManager = connection.getDrManager();
@@ -103,14 +104,21 @@ public class ChatController {
         chatInfoContainer.setAlignment(Pos.CENTER);
         chatInfoContainer.setSpacing(10);
 
+        Label chatroomName = new Label("");
         Circle chatroomAvatar = new Circle();
-        chatroomAvatar.setFill(new ImagePattern(new Image(new ByteArrayInputStream(friendVCard.getAvatar()))));
-        chatroomAvatar.setRadius(25);
+        try {
+            VCard v = connection.getVCard(friend.getJid().asEntityBareJidIfPossible());
+            //Label chatroomName = new Label(friendVCard.getField("Name"));
+            /* TESTING PURPOSES ONLY! */
+            chatroomName.setText(v.getNickName());
+            /* END OF TESTING CODE */
+            chatroomAvatar.setFill(new ImagePattern(new Image(new ByteArrayInputStream(v.getAvatar()))));
+            chatroomAvatar.setRadius(25);
+        } catch (Exception e) {
+            System.out.println("Avatar exception");
+            e.printStackTrace();
+        }
 
-        //Label chatroomName = new Label(friendVCard.getField("Name"));
-        /* TESTING PURPOSES ONLY! */
-        Label chatroomName = new Label(friendVCard.getNickName());
-        /* END OF TESTING CODE */
         chatInfoContainer.getChildren().addAll(chatroomAvatar, chatroomName);
         chatroomInfo.getChildren().add(chatInfoContainer);
         try {
@@ -202,9 +210,19 @@ public class ChatController {
                 } else {
                     messageContainer.setAlignment(Pos.TOP_LEFT);
                     Circle messageAvatar = new Circle();
-                    messageAvatar.setFill(new ImagePattern(new Image(new ByteArrayInputStream(friendVCard.getAvatar()))));
-                    messageAvatar.setRadius(20);
-                    messageContainer.getChildren().add(messageAvatar);
+                    VCard friendVCard;
+                    try {
+                        String friendJid = msg.getFrom().getResourceOrEmpty().toString()
+                                + "@" + msg.getFrom().getDomain().toString().replaceAll("conference\\.", "");
+                        System.out.println(friendJid);
+                        friendVCard = connection.getVCard(JidCreate.entityBareFrom(friendJid));
+                        messageAvatar.setFill(new ImagePattern(new Image(new ByteArrayInputStream(friendVCard.getAvatar()))));
+                        messageAvatar.setRadius(20);
+                        messageContainer.getChildren().add(messageAvatar);
+                    } catch (Exception e) {
+                        System.out.println("Avatar exception");
+                        e.printStackTrace();
+                    }
                     VBox nameAndMessage = new VBox();
                     nameAndMessage.setSpacing(5);
                     System.out.println(msg.getFrom().getResourceOrEmpty().toString());
