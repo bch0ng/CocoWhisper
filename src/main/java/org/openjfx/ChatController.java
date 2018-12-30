@@ -29,15 +29,23 @@ import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.roster.RosterEntry;
+import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.mam.MamManager;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
+import org.jivesoftware.smackx.xdata.Form;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatController {
@@ -51,6 +59,7 @@ public class ChatController {
     private ChattyXMPPConnection connection;
     private DeliveryReceiptManager drManager;
     private Scene scene;
+    private MultiUserChat muc;
 
 
     @FXML private BorderPane titleCont;
@@ -107,7 +116,7 @@ public class ChatController {
         try {
             ChatManager chatManager = connection.getChatManager();
             MamManager mamManager = connection.getMamManager();
-            System.out.println("MAM: " + mamManager.isSupported());
+            /*
             try {
                 MamManager.MamQueryArgs mamQueryArgs = MamManager.MamQueryArgs.builder()
                         .limitResultsToJid(friend.getJid())
@@ -153,6 +162,7 @@ public class ChatController {
                 e.printStackTrace();
             }
 
+
             chatManager.addIncomingListener((EntityBareJid from, Message message, Chat chat) -> {
                 HBox messageContainer = new HBox();
                 messageContainer.setAlignment(Pos.TOP_LEFT);
@@ -174,14 +184,51 @@ public class ChatController {
                 Platform.runLater(() -> chats.getChildren().add(messageContainer));
             });
             chat = connection.createChat(friend.getJid());
+            */
+
+            muc = connection.createOrJoinMuc(friend.getJid());
+            muc.addMessageListener((Message msg) -> {
+                HBox messageContainer = new HBox();
+                messageContainer.setSpacing(10);
+                Text messageText = new Text(msg.getBody());
+                TextFlow messageBody = new TextFlow(messageText);
+                if (connection.getLoggedInUserJid().getLocalpart().toString().equals(msg.getFrom().getResourceOrEmpty().toString())) {
+                    messageContainer.setAlignment(Pos.TOP_RIGHT);
+                    messageText.getStyleClass().add("user-message-text");
+                    messageBody.getStyleClass().add("user-message-body");
+                    //messageBody.pseudoClassStateChanged(PseudoClass.getPseudoClass("pending"), true);
+                    messageBody.setId(msg.getStanzaId());
+                    messageContainer.getChildren().add(messageBody);
+                } else {
+                    messageContainer.setAlignment(Pos.TOP_LEFT);
+                    Circle messageAvatar = new Circle();
+                    messageAvatar.setFill(new ImagePattern(new Image(new ByteArrayInputStream(friendVCard.getAvatar()))));
+                    messageAvatar.setRadius(20);
+                    messageContainer.getChildren().add(messageAvatar);
+                    VBox nameAndMessage = new VBox();
+                    nameAndMessage.setSpacing(5);
+                    System.out.println(msg.getFrom().getResourceOrEmpty().toString());
+                    Label name = new Label(msg.getFrom().getResourceOrEmpty().toString());
+                    name.getStyleClass().add("friend-message-name");
+                    messageText.getStyleClass().add("friend-message-text");
+                    messageBody.getStyleClass().add("friend-message-body");
+                    nameAndMessage.getChildren().addAll(name, messageBody);
+                    messageContainer.getChildren().add(nameAndMessage);
+                }
+                Platform.runLater(() -> chats.getChildren().add(messageContainer));
+            });
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         drManager.addReceiptReceivedListener((Jid fromJid, Jid toJid, String receiptId, Stanza receipt) -> {
+            /*
             System.out.println(receiptId);
             TextFlow msg = (TextFlow) scene.lookup("#" + receiptId);
             msg.pseudoClassStateChanged(PseudoClass.getPseudoClass("pending"), false);
             System.out.println("Delivered!");
+            */
         });
 
         BooleanBinding messageEmpty = new BooleanBinding() {
@@ -197,7 +244,7 @@ public class ChatController {
         msgSubmitBtn.disableProperty().bind(messageEmpty);
         msgContainer.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
                 if (event.getCode().equals(KeyCode.ENTER)) {
-                    System.out.println("CONSUMED: " + event.isConsumed());
+                    event.consume();
                     if (event.isShiftDown()) {
                         msgContainer.appendText(System.getProperty("line.separator"));
                     } else {
@@ -219,21 +266,9 @@ public class ChatController {
             msg.setFrom(connection.getLoggedInUserJid());
             msg.setBody(msgBody);
             msg.setType(Message.Type.chat);
-            chat.send(msg);
+            //chat.send(msg);
+            muc.sendMessage(msg);
             msgContainer.clear();
-
-            HBox messageContainer = new HBox();
-            messageContainer.setAlignment(Pos.TOP_RIGHT);
-            messageContainer.setSpacing(10);
-            System.out.println(msgBody);
-            Text messageText = new Text(msgBody);
-            messageText.getStyleClass().add("user-message-text");
-            TextFlow messageBody = new TextFlow(messageText);
-            messageBody.getStyleClass().add("user-message-body");
-            messageBody.pseudoClassStateChanged(PseudoClass.getPseudoClass("pending"), true);
-            messageBody.setId(msg.getStanzaId());
-            messageContainer.getChildren().add(messageBody);
-            chats.getChildren().add(messageContainer);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -3,15 +3,11 @@ package client;
 import java.io.*;
 import java.lang.Error;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import org.jivesoftware.smack.AbstractXMPPConnection;
-import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.SmackException.NotLoggedInException;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
@@ -24,16 +20,20 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqprivate.PrivateDataManager;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.mam.MamManager;
+import org.jivesoftware.smackx.muc.InvitationListener;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.MultiUserChatManager;
+import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
-import org.jxmpp.jid.BareJid;
-import org.jxmpp.jid.EntityBareJid;
-import org.jxmpp.jid.Jid;
+import org.jivesoftware.smackx.xdata.Form;
+import org.jxmpp.jid.*;
 import org.jxmpp.jid.impl.JidCreate;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 public class ChattyXMPPConnection
@@ -47,6 +47,8 @@ public class ChattyXMPPConnection
     private VCard userVCard;
     private Dotenv dotenv;
     private DeliveryReceiptManager drManager;
+    private MultiUserChatManager mucManager;
+    private MultiUserChat muc;
 
     public ChattyXMPPConnection(String username, String password) throws Exception
     {
@@ -81,6 +83,20 @@ public class ChattyXMPPConnection
         mamManager = MamManager.getInstanceFor(connection);
         drManager = DeliveryReceiptManager.getInstanceFor(connection);
         drManager.autoAddDeliveryReceiptRequests();
+        mucManager = MultiUserChatManager.getInstanceFor(connection);
+        mucManager.addInvitationListener(
+                (XMPPConnection conn, MultiUserChat muc, EntityJid inviter, String reason,
+                        String password, Message message, MUCUser.Invite invite) ->
+                {
+                    System.out.println("INVITED!");
+                    try {
+                        muc.join(Resourcepart.from(connection.getUser().getLocalpart().toString()), password);
+                        System.out.println("JOINED!");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
         try {
             connection.connect();
         } catch(Exception e) {
@@ -162,6 +178,40 @@ public class ChattyXMPPConnection
     }
 
     public DeliveryReceiptManager getDrManager() { return drManager; }
+
+    public MultiUserChatManager getMucManager() { return mucManager; }
+
+    public MultiUserChat createOrJoinMuc(BareJid chatWith) throws Exception {
+        EntityBareJid jid = JidCreate.entityBareFrom(connection.getUser().getLocalpart().toString() + "+" + chatWith.getLocalpartOrNull().toString() + "@conference." + dotenv.get("XMPP_DOMAIN"));
+        muc = mucManager.getMultiUserChat(jid);
+        try {
+            muc.create(Resourcepart.from(connection.getUser().getLocalpart().toString() + "+" + chatWith.getLocalpartOrNull().toString()));
+            System.out.println("CREATED");
+            List<String> owners = new ArrayList<>();
+            owners.add(connection.getUser().toString());
+            owners.add(chatWith.toString());
+            Form form = muc.getConfigurationForm();
+            Form answerForm = form.createAnswerForm();
+            answerForm.setAnswer("muc#roomconfig_roomowners", owners);
+            answerForm.setAnswer("muc#roomconfig_persistentroom", true);
+            answerForm.setAnswer("muc#roomconfig_allowinvites", true);
+            answerForm.setAnswer("muc#roomconfig_membersonly", true);
+            answerForm.setAnswer("muc#roomconfig_publicroom", false);
+            answerForm.setAnswer("muc#roomconfig_passwordprotectedroom", true);
+            answerForm.setAnswer("muc#roomconfig_roomsecret", Integer.toString(muc.hashCode()));
+            muc.sendConfigurationForm(answerForm);
+            muc.join(Resourcepart.from(connection.getUser().getLocalpart().toString()), Integer.toString(muc.hashCode()));
+            muc.invite(chatWith.asEntityBareJidIfPossible(), "Invited");
+        } catch (Exception e) {
+            try {
+                muc.join(Resourcepart.from(connection.getUser().getLocalpart().toString()), Integer.toString(muc.hashCode()));
+                System.out.println("JOINED");
+            } catch (Exception ex) {
+                e.printStackTrace();
+            }
+        }
+        return muc;
+    }
 
     public Chat createChat(BareJid chatWith) throws Exception
     {
