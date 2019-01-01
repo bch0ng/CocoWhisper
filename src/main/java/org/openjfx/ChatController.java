@@ -66,11 +66,12 @@ public class ChatController {
     @FXML private BorderPane titleCont;
     @FXML private AnchorPane titlebar;
     @FXML private TitlebarController titlebarController;
-    @FXML private VBox chatroomInfo;
+    @FXML private HBox chatroomInfo;
     @FXML private ScrollPane viewChat;
     @FXML private VBox chats;
     @FXML private TextArea msgContainer;
     @FXML private Button msgSubmitBtn;
+    @FXML private HBox chatBtns;
 
     public void initialize() {
         titlebar.setPickOnBounds(false);
@@ -100,8 +101,7 @@ public class ChatController {
         viewChat.setFitToWidth(true);
         msgContainer.requestFocus();
 
-        VBox chatInfoContainer = new VBox();
-        chatInfoContainer.setAlignment(Pos.CENTER);
+        HBox chatInfoContainer = new HBox();
         chatInfoContainer.setSpacing(10);
 
         Label chatroomName = new Label("");
@@ -124,77 +124,29 @@ public class ChatController {
         try {
             ChatManager chatManager = connection.getChatManager();
             MamManager mamManager = connection.getMamManager();
-            /*
-            try {
-                MamManager.MamQueryArgs mamQueryArgs = MamManager.MamQueryArgs.builder()
-                        .limitResultsToJid(friend.getJid())
-                        .setResultPageSizeTo(10)
-                        .queryLastPage()
-                        .build();
-                MamManager.MamQuery mamQuery = mamManager.queryArchive(mamQueryArgs);
-                List<Message> messages = mamQuery.getMessages();
-                for (Message message : messages) {
-                    if (message.getFrom().asEntityBareJidIfPossible().equals(friend.getJid().asEntityBareJidIfPossible())) {
-                        HBox messageContainer = new HBox();
-                        messageContainer.setAlignment(Pos.TOP_LEFT);
-                        messageContainer.setSpacing(10);
-                        Circle messageAvatar = new Circle();
-                        messageAvatar.setFill(new ImagePattern(new Image(new ByteArrayInputStream(friendVCard.getAvatar()))));
-                        messageAvatar.setRadius(20);
-                        messageContainer.getChildren().add(messageAvatar);
-                        VBox nameAndMessage = new VBox();
-                        nameAndMessage.setSpacing(5);
-                        Label name = new Label(message.getFrom().getLocalpartOrNull().toString());
-                        name.getStyleClass().add("friend-message-name");
-                        Text messageText = new Text(message.getBody());
-                        messageText.getStyleClass().add("friend-message-text");
-                        TextFlow messageBody = new TextFlow(messageText);
-                        messageBody.getStyleClass().add("friend-message-body");
-                        nameAndMessage.getChildren().addAll(name, messageBody);
-                        messageContainer.getChildren().add(nameAndMessage);
-                        chats.getChildren().add(messageContainer);
-                    } else if (message.getFrom().asEntityBareJidIfPossible().equals(connection.getLoggedInUserJid())) {
-                        HBox messageContainer = new HBox();
-                        messageContainer.setAlignment(Pos.TOP_RIGHT);
-                        messageContainer.setSpacing(10);
-                        Text messageText = new Text(message.getBody());
-                        messageText.getStyleClass().add("user-message-text");
-                        TextFlow messageBody = new TextFlow(messageText);
-                        messageBody.getStyleClass().add("user-message-body");
-                        messageContainer.getChildren().add(messageBody);
-                        chats.getChildren().add(messageContainer);
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println("NOOOOOO");
-                e.printStackTrace();
-            }
-
-
-            chatManager.addIncomingListener((EntityBareJid from, Message message, Chat chat) -> {
-                HBox messageContainer = new HBox();
-                messageContainer.setAlignment(Pos.TOP_LEFT);
-                messageContainer.setSpacing(10);
-                Circle messageAvatar = new Circle();
-                messageAvatar.setFill(new ImagePattern(new Image(new ByteArrayInputStream(friendVCard.getAvatar()))));
-                messageAvatar.setRadius(20);
-                messageContainer.getChildren().add(messageAvatar);
-                VBox nameAndMessage = new VBox();
-                nameAndMessage.setSpacing(5);
-                Label name = new Label(from.getLocalpart().toString());
-                name.getStyleClass().add("friend-message-name");
-                Text messageText = new Text(message.getBody());
-                messageText.getStyleClass().add("friend-message-text");
-                TextFlow messageBody = new TextFlow(messageText);
-                messageBody.getStyleClass().add("friend-message-body");
-                nameAndMessage.getChildren().addAll(name, messageBody);
-                messageContainer.getChildren().add(nameAndMessage);
-                Platform.runLater(() -> chats.getChildren().add(messageContainer));
-            });
-            chat = connection.createChat(friend.getJid());
-            */
 
             muc = connection.createOrJoinMuc(friend.getJid());
+            Button invite = new Button("Invite");
+            invite.setOnAction((ActionEvent a) -> {
+
+            });
+            Button leave = new Button("Leave");
+            leave.setOnAction((ActionEvent a) -> {
+                try {
+                    // if participants == 2 then destroy and remove from bookmarks, else just leave and remove from bookmarks
+                    muc.destroy("Left", null);
+                    muc.leave();
+                    stage.close();
+                    System.out.println("Left!");
+                } catch (Exception e) {
+                    System.out.println("could not leave :(");
+                    e.printStackTrace();
+                }
+            });
+            //HBox.setHgrow(chatBtns, Priority.ALWAYS);
+            chatBtns.setSpacing(10);
+            chatBtns.getChildren().addAll(invite, leave);
+
             muc.addMessageListener((Message msg) -> {
                 HBox messageContainer = new HBox();
                 messageContainer.setSpacing(10);
@@ -214,7 +166,6 @@ public class ChatController {
                     try {
                         String friendJid = msg.getFrom().getResourceOrEmpty().toString()
                                 + "@" + msg.getFrom().getDomain().toString().replaceAll("conference\\.", "");
-                        System.out.println(friendJid);
                         friendVCard = connection.getVCard(JidCreate.entityBareFrom(friendJid));
                         messageAvatar.setFill(new ImagePattern(new Image(new ByteArrayInputStream(friendVCard.getAvatar()))));
                         messageAvatar.setRadius(20);
@@ -225,7 +176,6 @@ public class ChatController {
                     }
                     VBox nameAndMessage = new VBox();
                     nameAndMessage.setSpacing(5);
-                    System.out.println(msg.getFrom().getResourceOrEmpty().toString());
                     Label name = new Label(msg.getFrom().getResourceOrEmpty().toString());
                     name.getStyleClass().add("friend-message-name");
                     messageText.getStyleClass().add("friend-message-text");
@@ -284,7 +234,6 @@ public class ChatController {
             msg.setFrom(connection.getLoggedInUserJid());
             msg.setBody(msgBody);
             msg.setType(Message.Type.chat);
-            //chat.send(msg);
             muc.sendMessage(msg);
             msgContainer.clear();
         } catch (Exception e) {

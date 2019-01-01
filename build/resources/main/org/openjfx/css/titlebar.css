@@ -1,0 +1,50 @@
+ToolBar,
+.toolbar-button,
+Button.nav-item {
+    -fx-background-color: transparent;
+}
+.tool-bar #titlebar {
+    -fx-spacing: 10px;
+}
+.toolbar-button,
+.toolbar-button > graphic > image {
+    -fx-background-size: 12px 12px;
+    -fx-min-height: 12px;
+    -fx-min-width: 12px;
+    -fx-max-height: 12px;
+    -fx-max-width: 12px;
+}
+#closeButton.toolbar-button {
+    -fx-background-image: url("../images/titlebar_icons/medium/red.png");
+}
+#closeButton.toolbar-button:active,
+#closeButton.toolbar-button:hover {
+    -fx-background-image: url("../images/titlebar_icons/medium/red_hover.png");
+}
+#closeButton.toolbar-button:pressed {
+    -fx-background-image: url("../images/titlebar_icons/medium/red_active.png");
+}
+#minimizeButton.toolbar-button {
+    -fx-background-image: url("../images/titlebar_icons/medium/yellow.png");
+}
+#minimizeButton.toolbar-button:active,
+#minimizeButton.toolbar-button:hover {
+    -fx-background-image: url("../images/titlebar_icons/medium/yellow_hover.png");
+}
+#minimizeButton.toolbar-button:pressed {
+    -fx-background-image: url("../images/titlebar_icons/medium/yellow_active.png");
+}
+#resizeButton.toolbar-button {
+    -fx-background-image: url("../images/titlebar_icons/medium/green.png");
+}
+#resizeButton.toolbar-button:active,
+#resizeButton.toolbar-button:hover {
+    -fx-background-image: url("../images/titlebar_icons/medium/green_hover.png");
+}
+#resizeButton.toolbar-button:pressed {
+    -fx-background-image: url("../images/titlebar_icons/medium/green_active.png");
+}
+.unfocused-button {
+    -fx-background-image: url("../images/titlebar_icons/medium/unfocused.png") !important;
+}
+

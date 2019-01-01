@@ -2,6 +2,7 @@ package org.openjfx;
 
 import client.ChattyXMPPConnection;
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.css.PseudoClass;
@@ -25,20 +26,24 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Modality;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.stage.*;
 import javafx.util.Duration;
+import org.controlsfx.control.PopOver;
 import org.jivesoftware.smack.roster.RosterEntry;
+import org.jivesoftware.smackx.bookmarks.BookmarkedConference;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.mam.MamManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jxmpp.jid.EntityBareJid;
 
+import javax.swing.text.html.parser.Entity;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import static org.controlsfx.control.PopOver.ArrowLocation.RIGHT_CENTER;
 
 public class FXMLController {
     // Size in pixels (px) for titlebar icons.
@@ -69,7 +74,7 @@ public class FXMLController {
     @FXML private Button mute;
     @FXML private Button settings;
     @FXML private BorderPane login;
-    @FXML private StackPane testing;
+    @FXML private StackPane rootPane;
     @FXML private TextField usernameInput;
     @FXML private PasswordField passwordInput;
     @FXML private Button loginButton;
@@ -81,12 +86,11 @@ public class FXMLController {
     @FXML private VBox inputFields;
     @FXML private Label passwordHint;
     @FXML private HBox titleContainer;
-
     @FXML private BorderPane userInfoContainer;
     @FXML private Label userInfoName;
-
     @FXML private TitlebarController titlebarController;
     @FXML private AnchorPane titlebar;
+    @FXML private ScrollPane viewContainer;
 
     public void initialize() {
         try {
@@ -94,6 +98,8 @@ public class FXMLController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        viewContainer.setFitToHeight(true);
+        viewContainer.setFitToWidth(true);
         MenuBar menuBar = new MenuBar();
         menuBar.useSystemMenuBarProperty().set(true);
         //layout.setVisible(false);
@@ -302,6 +308,7 @@ public class FXMLController {
         clearActiveIcons();
         activeIcon(friends);
         view.getChildren().clear();
+        titleContainer.getChildren().clear();
         Label title = new Label();
         Label friendCount = new Label();
         title.getStyleClass().add("title");
@@ -351,11 +358,31 @@ public class FXMLController {
                 friendAvatarContainer.setOnMousePressed((MouseEvent m) -> {
                     try {
                         FXMLLoader userInfoLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/user_info.fxml"));
-                        Parent userInfoRoot = userInfoLoader.load();
-                        Scene userInfoScene = new Scene(userInfoRoot, 390, 660);
+                        Scene userInfoScene = new Scene(userInfoLoader.load(), 300, 400);
                         Stage userInfoStage = new Stage();
+                        userInfoScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/user_info.css").toExternalForm());
+                        userInfoScene.setFill(Color.TRANSPARENT);
+                        userInfoStage.initStyle(StageStyle.TRANSPARENT);
                         userInfoStage.setScene(userInfoScene);
+                        userInfoStage.initModality(Modality.NONE);
+                        Bounds boundsInScreen = friendAvatarContainer.localToScreen(friendAvatarContainer.getBoundsInLocal());
+                        double xPos = boundsInScreen.getMinX() - 330;
+                        double yPos = boundsInScreen.getCenterY() - 210;
+                        if (xPos < 0) {
+                            xPos = boundsInScreen.getMinX() + 150;
+                        }
+                        if (yPos > Screen.getPrimary().getVisualBounds().getHeight() - 400) {
+                            yPos = Screen.getPrimary().getVisualBounds().getHeight() - 400;
+                        }
+                        userInfoStage.setX(xPos);
+                        userInfoStage.setY(yPos);
+                        userInfoStage.focusedProperty().addListener((obs, oldVal, isFocused) -> {
+                            if (!isFocused) {
+                                userInfoStage.close();
+                            }
+                        });
                         userInfoStage.show();
+                        ((UserInfoController) userInfoLoader.getController()).setupInfo(friendVCard, connection, friend);
                     } catch (Exception e) {
                         System.out.println("HELLO!");
                         e.printStackTrace();
@@ -417,6 +444,7 @@ public class FXMLController {
         clearActiveIcons();
         activeIcon(chats);
         view.getChildren().clear();
+        titleContainer.getChildren().clear();
         Label title = new Label();
         Label friendCount = new Label();
         title.getStyleClass().add("title");
@@ -433,9 +461,15 @@ public class FXMLController {
         });
         view.getChildren().addAll(titleContainer, new Separator());
         try {
-            MamManager mamManager = connection.getMamManager();
+            List<BookmarkedConference> l = connection.getGroupChats();
+            System.out.println(l.size());
+            for (BookmarkedConference i : l) {
+                EntityBareJid groupChatJid = i.getJid();
+                System.out.println(groupChatJid.toString());
+                System.out.println(connection.getMucManager().getRoomInfo(groupChatJid).getName());
+            }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

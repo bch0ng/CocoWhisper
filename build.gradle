@@ -32,7 +32,8 @@ dependencies {
     compile group: 'org.igniterealtime.smack', name: 'smack-experimental', version: '4.3.0'
     // https://mvnrepository.com/artifact/javax.validation/validation-api
     compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
-
+    // https://mvnrepository.com/artifact/org.controlsfx/controlsfx
+    compile group: 'org.controlsfx', name: 'controlsfx', version: '9.0.0'
 }
 
 javafx {

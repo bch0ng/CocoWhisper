@@ -18,6 +18,8 @@ import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.bookmarks.BookmarkManager;
+import org.jivesoftware.smackx.bookmarks.BookmarkedConference;
 import org.jivesoftware.smackx.iqprivate.PrivateDataManager;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.mam.MamManager;
@@ -52,6 +54,8 @@ public class ChattyXMPPConnection
     private MultiUserChat muc;
     private EntityBareJid userJid;
     private String userName;
+    private BookmarkManager bookManager;
+    private PrivateDataManager pdManager;
 
     public ChattyXMPPConnection(String username, String password) throws Exception
     {
@@ -94,12 +98,17 @@ public class ChattyXMPPConnection
                     System.out.println("INVITED!");
                     try {
                         muc.join(Resourcepart.from(userName), password);
+                        System.out.println(muc.getRoom().getLocalpart().toString());
+                        bookManager.addBookmarkedConference(muc.getRoom().getLocalpart().toString(), muc.getRoom(), true, Resourcepart.from(userName),
+                                Integer.toString(muc.hashCode()));
                         System.out.println("JOINED!");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
         );
+        bookManager = BookmarkManager.getBookmarkManager(connection);
+        pdManager = PrivateDataManager.getInstanceFor(connection);
         try {
             connection.connect();
         } catch(Exception e) {
@@ -142,12 +151,25 @@ public class ChattyXMPPConnection
     public void login(String username, String password) throws Exception {
         try {
             connection.login(username, password);
+            /* FOR TESTING PURPOSES */
+            removeAllBookmarkedConferences();
+            /* END OF TESTING PURPOSES */
             userJid = connection.getUser().asEntityBareJid();
             userVCard = vcManager.loadVCard(userJid);
             userName = userJid.getLocalpart().toString();
         } catch(Exception e) {
             e.printStackTrace();
             throw new Exception("Incorrect Login provided.");
+        }
+    }
+
+    private void removeAllBookmarkedConferences() throws Exception {
+        List<EntityBareJid> bookmarkJid = new ArrayList<>();
+        for (BookmarkedConference i : bookManager.getBookmarkedConferences()) {
+            bookmarkJid.add(i.getJid());
+        }
+        for (EntityBareJid i : bookmarkJid) {
+            bookManager.removeBookmarkedConference(i);
         }
     }
 
@@ -186,13 +208,20 @@ public class ChattyXMPPConnection
 
     public MultiUserChatManager getMucManager() { return mucManager; }
 
-    public MultiUserChat createOrJoinMuc(BareJid friend) throws Exception {
+    public Set<EntityBareJid> getChatrooms() throws Exception
+    {
+        return mucManager.getJoinedRooms();
+    }
+
+    public MultiUserChat createOrJoinMuc(BareJid friend) throws Exception
+    {
         List<BareJid> participants = new ArrayList<>();
         participants.add(friend);
         return createOrJoinMuc(participants);
     }
 
-    public MultiUserChat createOrJoinMuc(List<BareJid> participants) throws Exception {
+    public MultiUserChat createOrJoinMuc(List<BareJid> participants) throws Exception
+    {
         List<String> owners = new ArrayList<>();
                      owners.add(userJid.toString());
 
@@ -208,9 +237,11 @@ public class ChattyXMPPConnection
         muc = mucManager.getMultiUserChat(chatJid);
         try {
             muc.create(Resourcepart.from(userName));
+            String roomName = participants.size() == 1 ? participants.get(0).getLocalpartOrNull().toString() : "Group Chat";
             System.out.println("CREATED");
             Form form = muc.getConfigurationForm();
             Form answerForm = form.createAnswerForm();
+                 answerForm.setAnswer("muc#roomconfig_roomname", roomName);
                  answerForm.setAnswer("muc#roomconfig_roomowners", owners);
                  answerForm.setAnswer("muc#roomconfig_persistentroom", true);
                  answerForm.setAnswer("muc#roomconfig_allowinvites", true);
@@ -223,6 +254,9 @@ public class ChattyXMPPConnection
             for (BareJid friend : participants) {
                 muc.invite(friend.asEntityBareJidIfPossible(), "Invited");
             }
+            bookManager.addBookmarkedConference(roomName, muc.getRoom(), true, Resourcepart.from(userName),
+                    Integer.toString(muc.hashCode()));
+            System.out.println("Bookmark added");
         } catch (Exception e) {
             try {
                 muc.join(Resourcepart.from(userName), Integer.toString(muc.hashCode()));
@@ -234,17 +268,12 @@ public class ChattyXMPPConnection
         return muc;
     }
 
+    public List<BookmarkedConference> getGroupChats() throws Exception {
+        return bookManager.getBookmarkedConferences();
+    }
+
     public Chat createChat(BareJid friend) throws Exception
     {
-        /*
-        chatManager.addIncomingListener(new IncomingChatMessageListener() {
-            @Override
-            public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
-                String jidString = from.toString();
-                System.out.println(jidString.substring(0, jidString.indexOf("@"))+ ": " + message.getBody());
-            }
-        });
-        */
         EntityBareJid jid = JidCreate.entityBareFrom(friend);
         System.out.println(jid);
         if (!roster.contains(jid)) {
