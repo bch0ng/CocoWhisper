@@ -9,7 +9,7 @@
 #chatroomInfo {
     -fx-padding: 35px 0 10px 15px;
 }
-#chatroomInformation {
+#draggable {
     -fx-border-style: none none solid none;
     -fx-border-color: transparent transparent rgba(0,0,0,0.1) transparent;
     -fx-border-width: 0 0 2px 0;

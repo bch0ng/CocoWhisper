@@ -31,14 +31,11 @@ public class UserInfoController {
     @FXML private VBox userInfo;
     @FXML private VBox privateChatBtn;
 
-    public void initialize() {
-
-    }
-
     public void setupInfo(VCard infoVCard, ChattyXMPPConnection connection, RosterEntry user) {
         this.infoVCard = infoVCard;
         this.connection = connection;
         this.user = user;
+
         Label userInfoName = new Label(infoVCard.getNickName());
         userInfoName.getStyleClass().add("title");
         Circle userInfoAvatar = new Circle();

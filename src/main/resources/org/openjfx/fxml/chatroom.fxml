@@ -11,7 +11,7 @@
     <StackPane>
         <BorderPane>
             <top>
-                <BorderPane>
+                <BorderPane fx:id="draggable">
                     <left>
                         <VBox alignment="CENTER">
                             <HBox fx:id="chatroomInfo" alignment="CENTER_LEFT"/>

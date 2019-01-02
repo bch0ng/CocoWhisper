@@ -28,7 +28,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.*;
 import javafx.util.Duration;
-import org.controlsfx.control.PopOver;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smackx.bookmarks.BookmarkedConference;
 import org.jivesoftware.smackx.iqregister.AccountManager;
@@ -43,7 +42,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static org.controlsfx.control.PopOver.ArrowLocation.RIGHT_CENTER;
 
 public class FXMLController {
     // Size in pixels (px) for titlebar icons.
@@ -358,7 +356,12 @@ public class FXMLController {
                 friendAvatarContainer.setOnMousePressed((MouseEvent m) -> {
                     try {
                         FXMLLoader userInfoLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/user_info.fxml"));
-                        Scene userInfoScene = new Scene(userInfoLoader.load(), 300, 400);
+                        Parent userInfoRoot = userInfoLoader.load();
+                        FadeTransition ft = new FadeTransition(Duration.millis(200), userInfoRoot);
+                                        ft.setFromValue(0.0);
+                                        ft.setToValue(1.0);
+                                        ft.play();
+                        Scene userInfoScene = new Scene(userInfoRoot, 300, 400);
                         Stage userInfoStage = new Stage();
                         userInfoScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/user_info.css").toExternalForm());
                         userInfoScene.setFill(Color.TRANSPARENT);
@@ -391,34 +394,65 @@ public class FXMLController {
                 });
                 friendInfo.getChildren().addAll(friendAvatarContainer, friendName);
                 //friendInfoContainer.getChildren().add(friendInfo);
-                friendInfo.setOnMouseClicked((MouseEvent m) -> {
-                    if(m.getButton().equals(MouseButton.PRIMARY)){
-                        if (m.getClickCount() == 1) {
-                            if (currentlySelectedFriend != null) {
-                                currentlySelectedFriend.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), false);
-                            }
-                            currentlySelectedFriend = friendInfo;
-                            friendInfo.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), true);
-                        } else if (m.getClickCount() == 2) {
-                            try {
-                                FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/chatroom.fxml"));
-                                Parent chatRoot = chatLoader.load();
-                                Scene chatScene = new Scene(chatRoot, 380, 620);
-                                Stage chatStage = new Stage();
-                                ((ChatController) chatLoader.getController()).setupChat(chatStage, chatScene, friendVCard, connection, friend);
-                                chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/titlebar.css").toExternalForm());
-                                chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/chatroom.css").toExternalForm());
-                                chatScene.setFill(Color.TRANSPARENT);
-                                chatStage.initStyle(StageStyle.TRANSPARENT);
-                                chatStage.setScene(chatScene);
-                                chatStage.show();
-                            } catch (Exception e) {
-                                System.out.println("HI");
-                                e.printStackTrace();
+                if (!isCurrentUser) {
+                    friendInfo.setOnMouseClicked((MouseEvent m) -> {
+                        if (m.getButton().equals(MouseButton.PRIMARY)) {
+                            if (m.getClickCount() == 1) {
+                                if (currentlySelectedFriend != null) {
+                                    currentlySelectedFriend.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), false);
+                                }
+                                currentlySelectedFriend = friendInfo;
+                                friendInfo.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), true);
+                            } else if (m.getClickCount() == 2) {
+                                try {
+                                    FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/chatroom.fxml"));
+                                    Parent chatRoot = chatLoader.load();
+                                    Scene chatScene = new Scene(chatRoot, 380, 620);
+                                    Stage chatStage = new Stage();
+                                    ((ChatController) chatLoader.getController()).setupChat(chatStage, chatScene, friendVCard, connection, friend);
+                                    chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/titlebar.css").toExternalForm());
+                                    chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/chatroom.css").toExternalForm());
+                                    chatScene.setFill(Color.TRANSPARENT);
+                                    chatStage.initStyle(StageStyle.TRANSPARENT);
+                                    chatStage.setScene(chatScene);
+                                    chatStage.show();
+                                } catch (Exception e) {
+                                    System.out.println("HI");
+                                    e.printStackTrace();
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                } else {
+                    friendInfo.setOnMouseClicked((MouseEvent m) -> {
+                        if (m.getButton().equals(MouseButton.PRIMARY)) {
+                            if (m.getClickCount() == 1) {
+                                if (currentlySelectedFriend != null) {
+                                    currentlySelectedFriend.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), false);
+                                }
+                                currentlySelectedFriend = friendInfo;
+                                friendInfo.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), true);
+                            } else if (m.getClickCount() == 2) {
+                                try {
+                                    FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/chatroom.fxml"));
+                                    Parent chatRoot = chatLoader.load();
+                                    Scene chatScene = new Scene(chatRoot, 380, 620);
+                                    Stage chatStage = new Stage();
+                                    ((ChatController) chatLoader.getController()).setupChat(chatStage, chatScene, null, connection, null);
+                                    chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/titlebar.css").toExternalForm());
+                                    chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/chatroom.css").toExternalForm());
+                                    chatScene.setFill(Color.TRANSPARENT);
+                                    chatStage.initStyle(StageStyle.TRANSPARENT);
+                                    chatStage.setScene(chatScene);
+                                    chatStage.show();
+                                } catch (Exception e) {
+                                    System.out.println("HI");
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                }
                 friendsList.getChildren().add(friendInfo);
                 // Creates the Friends label and subtitle only once (after user's profile)
                 if (isCurrentUser) {

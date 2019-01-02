@@ -1,13 +1,23 @@
 package org.openjfx;
 
 import client.ChattyXMPPConnection;
+import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -16,11 +26,13 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.stage.Stage;
+import javafx.stage.*;
+import javafx.util.Duration;
 import jdk.internal.jline.internal.Log;
 import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
@@ -28,6 +40,7 @@ import org.jivesoftware.smack.packet.DefaultExtensionElement;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
@@ -40,6 +53,7 @@ import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.xdata.Form;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
@@ -47,6 +61,7 @@ import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ChatController {
@@ -72,6 +87,9 @@ public class ChatController {
     @FXML private TextArea msgContainer;
     @FXML private Button msgSubmitBtn;
     @FXML private HBox chatBtns;
+    @FXML private BorderPane draggable;
+    @FXML private ScrollPane inviteListContainer;
+    @FXML private VBox inviteListVBox;
 
     public void initialize() {
         titlebar.setPickOnBounds(false);
@@ -79,11 +97,11 @@ public class ChatController {
         xOffset = 0;
         yOffset = 0;
         viewChat.vvalueProperty().bind(chats.heightProperty());
-        chatroomInfo.setOnMousePressed((MouseEvent event) -> {
+        draggable.setOnMousePressed((MouseEvent event) -> {
             xOffset = event.getSceneX();
             yOffset = event.getSceneY();
         });
-        chatroomInfo.setOnMouseDragged((MouseEvent event) -> {
+        draggable.setOnMouseDragged((MouseEvent event) -> {
             stage.setX(event.getScreenX() - xOffset);
             stage.setY(event.getScreenY() - yOffset);
         });
@@ -107,7 +125,12 @@ public class ChatController {
         Label chatroomName = new Label("");
         Circle chatroomAvatar = new Circle();
         try {
-            VCard v = connection.getVCard(friend.getJid().asEntityBareJidIfPossible());
+            VCard v;
+            if (friend != null) {
+                v = connection.getVCard(friend.getJid().asEntityBareJidIfPossible());
+            } else {
+                v  = connection.getUserVCard();
+            }
             //Label chatroomName = new Label(friendVCard.getField("Name"));
             /* TESTING PURPOSES ONLY! */
             chatroomName.setText(v.getNickName());
@@ -125,28 +148,62 @@ public class ChatController {
             ChatManager chatManager = connection.getChatManager();
             MamManager mamManager = connection.getMamManager();
 
-            muc = connection.createOrJoinMuc(friend.getJid());
-            Button invite = new Button("Invite");
-            invite.setOnAction((ActionEvent a) -> {
-
-            });
-            Button leave = new Button("Leave");
-            leave.setOnAction((ActionEvent a) -> {
-                try {
-                    // if participants == 2 then destroy and remove from bookmarks, else just leave and remove from bookmarks
-                    muc.destroy("Left", null);
-                    muc.leave();
-                    stage.close();
-                    System.out.println("Left!");
-                } catch (Exception e) {
-                    System.out.println("could not leave :(");
-                    e.printStackTrace();
-                }
-            });
-            //HBox.setHgrow(chatBtns, Priority.ALWAYS);
-            chatBtns.setSpacing(10);
-            chatBtns.getChildren().addAll(invite, leave);
-
+            if (friend == null) {
+                List<BareJid> l = new ArrayList<>();
+                muc = connection.createOrJoinMuc(l);
+            } else {
+                muc = connection.createOrJoinMuc(friend.getJid());
+            }
+            //muc = connection.createOrJoinMuc(friend.getJid());
+            if (friend != null) {
+                Button invite = new Button("Invite");
+                invite.setOnAction((ActionEvent a) -> {
+                    try {
+                        FXMLLoader inviteFriendLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/invite_friend.fxml"));
+                        Parent inviteFriendRoot = inviteFriendLoader.load();
+                        FadeTransition ft = new FadeTransition(Duration.millis(200), inviteFriendRoot);
+                        ft.setFromValue(0);
+                        ft.setToValue(1.0);
+                        ft.play();
+                        Scene inviteFriendScene = new Scene(inviteFriendRoot, 300, 500);
+                        Stage inviteFriendStage = new Stage();
+                        inviteFriendScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/invite_friend.css").toExternalForm());
+                        inviteFriendScene.setFill(Color.TRANSPARENT);
+                        inviteFriendStage.initStyle(StageStyle.TRANSPARENT);
+                        inviteFriendStage.setScene(inviteFriendScene);
+                        inviteFriendStage.initModality(Modality.NONE);
+                        inviteFriendStage.focusedProperty().addListener((obs, oldVal, isFocused) -> {
+                            if (!isFocused) {
+                                inviteFriendStage.close();
+                            }
+                        });
+                        ((InviteFriendController) inviteFriendLoader.getController()).getInviteList(connection, muc, inviteFriendStage);
+                        inviteFriendStage.show();
+                    } catch (Exception e) {
+                        System.out.println("invite roster exception");
+                        e.printStackTrace();
+                    }
+                });
+                Button leave = new Button("Leave");
+                leave.setOnAction((ActionEvent a) -> {
+                    try {
+                        // if participants == 2 then destroy and remove from bookmarks, else just leave and remove from bookmarks
+                        connection.getBookmarkManager().removeBookmarkedConference(muc.getRoom());
+                        if (muc.getOccupantsCount() <= 2) {
+                            muc.destroy("Left", null);
+                        }
+                        muc.leave();
+                        stage.close();
+                        System.out.println("Left!");
+                    } catch (Exception e) {
+                        System.out.println("could not leave :(");
+                        e.printStackTrace();
+                    }
+                });
+                //HBox.setHgrow(chatBtns, Priority.ALWAYS);
+                chatBtns.setSpacing(10);
+                chatBtns.getChildren().addAll(invite, leave);
+            }
             muc.addMessageListener((Message msg) -> {
                 HBox messageContainer = new HBox();
                 messageContainer.setSpacing(10);
@@ -165,7 +222,7 @@ public class ChatController {
                     VCard friendVCard;
                     try {
                         String friendJid = msg.getFrom().getResourceOrEmpty().toString()
-                                + "@" + msg.getFrom().getDomain().toString().replaceAll("conference\\.", "");
+                                + "@" + msg.getFrom().getDomain().toString().replaceAll("conference.", "");
                         friendVCard = connection.getVCard(JidCreate.entityBareFrom(friendJid));
                         messageAvatar.setFill(new ImagePattern(new Image(new ByteArrayInputStream(friendVCard.getAvatar()))));
                         messageAvatar.setRadius(20);
@@ -227,7 +284,13 @@ public class ChatController {
     public void sendMsg() {
         try {
             String msgBody = msgContainer.getText();
-            Message msg = new Message(friend.getJid());
+            Message msg;
+            if (friend != null) {
+                msg = new Message(friend.getJid());
+            } else {
+                msg = new Message(connection.getLoggedInUserJid().asBareJid());
+            }
+
             String msgID = Integer.toString(msg.hashCode());
             System.out.println(msgID);
             msg.setStanzaId(msgID);

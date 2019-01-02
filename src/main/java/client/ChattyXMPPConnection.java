@@ -1,5 +1,6 @@
 package client;
 
+import java.awt.print.Book;
 import java.io.*;
 import java.lang.Error;
 import java.net.URL;
@@ -107,6 +108,7 @@ public class ChattyXMPPConnection
                     }
                 }
         );
+
         bookManager = BookmarkManager.getBookmarkManager(connection);
         pdManager = PrivateDataManager.getInstanceFor(connection);
         try {
@@ -237,7 +239,7 @@ public class ChattyXMPPConnection
         muc = mucManager.getMultiUserChat(chatJid);
         try {
             muc.create(Resourcepart.from(userName));
-            String roomName = participants.size() == 1 ? participants.get(0).getLocalpartOrNull().toString() : "Group Chat";
+            String roomName = participants.size() <= 1 ? participants.get(0).getLocalpartOrNull().toString() : "Group Chat";
             System.out.println("CREATED");
             Form form = muc.getConfigurationForm();
             Form answerForm = form.createAnswerForm();
@@ -294,6 +296,10 @@ public class ChattyXMPPConnection
     public String getLoggedInUserName() throws Exception {
         //return accManager.getAccountAttribute("name");
         return userName;
+    }
+
+    public BookmarkManager getBookmarkManager() {
+        return bookManager;
     }
 
     public void disconnect()
