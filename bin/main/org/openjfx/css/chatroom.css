@@ -1,0 +1,154 @@
+.root {
+    -fx-background-color: #fff;
+    -fx-background-radius: 5px;
+    -fx-font-family: "sans-serif";
+    -fx-font-size: 1.2em;
+    -fx-border-color: rgba(0, 0, 0, 0.1);
+    -fx-border-radius: 5px;
+}
+#chatroomInfo {
+    -fx-padding: 35px 0 10px 15px;
+}
+#draggable {
+    -fx-border-style: none none solid none;
+    -fx-border-color: transparent transparent rgba(0,0,0,0.1) transparent;
+    -fx-border-width: 0 0 2px 0;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+#viewChat {
+    -fx-background-color: #fff2f0;
+}
+#chats {
+    -fx-padding: 10px 0 10px 10px;
+}
+#sendMsg {
+    -fx-border-style: solid none none none;
+    -fx-border-color: rgba(0,0,0,0.1) transparent transparent transparent;
+    -fx-border-width: 2px 0 0 0;
+}
+.text-area {
+    -fx-background-insets: 0;
+    -fx-background-color: transparent, white, transparent, white;
+    -fx-background-radius: 0 0 0 5px;
+}
+
+.text-area .content {
+    -fx-background-color: transparent, white, transparent, white;
+}
+
+.text-area:focused .content {
+    -fx-background-color: transparent, white, transparent, white;
+}
+
+.text-area:focused {
+    -fx-highlight-fill: #7ecfff;
+}
+
+.text-area .content {
+    -fx-padding: 10px;
+    -fx-text-fill: gray;
+    -fx-highlight-fill: #7ecfff;
+}
+#msgContainer {
+    -fx-pref-height: 100px;
+    -fx-pref-width: 290px;
+    -fx-hbar-policy: never;
+}
+#msgSubmitBtn {
+    -fx-padding: 30px 25px;
+    -fx-font-size: 0.9em;
+    -fx-background-color: #8d6868;
+    -fx-text-fill: white;
+}
+#msgSubmitBtn:disabled {
+    -fx-background-color: lightgray;
+    -fx-text-fill: #7f7f7f;
+}
+
+#viewChat .scroll-bar .thumb {
+    -fx-background-color: transparent;
+}
+#viewChat .scroll-bar:hover .thumb {
+    -fx-background-color:derive(black, 90%);
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+}
+#viewChat .scroll-bar .thumb:hover,
+#viewChat .scroll-bar .thumb:pressed {
+    -fx-background-color:derive(black, 70%);
+    -fx-background-insets: 0, 0, 0;
+}
+
+.scroll-bar {
+    -fx-background-color:transparent;
+}
+
+.scroll-bar:vertical {
+    -fx-background-color:transparent;
+}
+
+.scroll-bar:horizontal {
+    -fx-background-color:transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color:derive(black, 90%);
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color:derive(black, 70%);
+    -fx-background-insets: 0, 0, 0;
+}
+
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+
+    -fx-background-color:transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 10 0 0;
+
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+
+
+.track  {
+    -fx-background-color:transparent;
+}
+
+.friend-message-name {
+    -fx-text-fill: #7f7f7f;
+    -fx-font-size: 0.9em;
+}
+.friend-message-text {
+    -fx-fill: #7f7f7f;
+}
+.friend-message-body {
+    -fx-font-size: 0.9em;
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-padding: 10px;
+    -fx-max-width: 175px;
+    -fx-wrap-text: true;
+}
+.user-message-text {
+    -fx-fill: white;
+}
+.user-message-body {
+    -fx-font-size: 0.9em;
+    -fx-background-color: #8d6868;
+    -fx-background-radius: 5px;
+    -fx-padding: 10px;
+    -fx-max-width: 175px;
+    -fx-wrap-text: true;
+}
+.user-message-body:pending {
+    -fx-opacity: 0.5;
+}

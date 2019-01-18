@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.openjfx.ChatController" prefHeight="400.0" prefWidth="600.0">
+    <fx:include fx:id="titlebar" source="titlebar.fxml" />
+    <StackPane>
+        <BorderPane>
+            <top>
+                <BorderPane fx:id="draggable">
+                    <left>
+                        <VBox alignment="CENTER">
+                            <HBox fx:id="chatroomInfo" alignment="CENTER_LEFT"/>
+                        </VBox>
+                    </left>
+                    <right>
+                        <VBox alignment="CENTER">
+                            <HBox fx:id="chatBtns" alignment="CENTER_RIGHT" />
+                        </VBox>
+                    </right>
+                </BorderPane>
+            </top>
+            <center>
+                <ScrollPane fx:id="viewChat" vvalue="1">
+                    <VBox fx:id="chats" spacing="15"  HBox.hgrow="ALWAYS" />
+                </ScrollPane>
+            </center>
+            <bottom>
+                <AnchorPane fx:id="sendMsg">
+                    <TextArea fx:id="msgContainer" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="100.0" wrapText="true" />
+                    <Button fx:id="msgSubmitBtn" AnchorPane.topAnchor="10.0" AnchorPane.rightAnchor="10.0" onAction="#sendMsg">Send</Button>
+                </AnchorPane>
+                <!--
+                <HBox fx:id="sendMsg" spacing="20">
+                    <TextArea fx:id="msgContainer" wrapText="true" />
+                    <HBox alignment="CENTER">
+                        <Button fx:id="msgSubmitBtn" HBox.hgrow="ALWAYS" onAction="#sendMsg">Send</Button>
+                    </HBox>
+                </HBox>
+                -->
+            </bottom>
+        </BorderPane>
+    </StackPane>
+
+</StackPane>

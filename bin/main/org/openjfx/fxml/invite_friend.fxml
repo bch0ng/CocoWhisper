@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.openjfx.InviteFriendController"
+            prefHeight="400.0" prefWidth="600.0">
+    <top>
+        <VBox fx:id="inviteHeader">
+            <Label styleClass="title">Invite Friends</Label>
+            <!-- Search bar goes here -->
+        </VBox>
+    </top>
+    <center>
+        <ScrollPane fx:id="inviteListContainer" fitToWidth="true">
+            <VBox fx:id="inviteListVBox" />
+        </ScrollPane>
+    </center>
+    <bottom>
+        <VBox spacing="20">
+            <HBox fx:id="invitedFriends" spacing="10" alignment="CENTER" />
+            <HBox fx:id="btns" alignment="CENTER" spacing="20">
+                <Button fx:id="cancelInviteBtn" onAction="#cancelInvite">Cancel</Button>
+                <Button fx:id="sendInviteBtn" onAction="#sendInvite">Invite</Button>
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

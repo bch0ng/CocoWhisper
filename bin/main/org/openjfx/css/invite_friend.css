@@ -1,0 +1,110 @@
+.root {
+    -fx-background-color: #fff;
+    -fx-background-radius: 5px;
+    -fx-font-family: "sans-serif";
+    -fx-font-size: 1.2em;
+    -fx-border-color: rgba(0, 0, 0, 0.1);
+    -fx-border-radius: 5px;
+}
+.title {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+}
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0 0 5px 5px;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar {
+    -fx-background-color:transparent;
+}
+
+.scroll-bar:vertical {
+    -fx-background-color:transparent;
+}
+
+.scroll-bar:horizontal {
+    -fx-background-color:transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color:derive(black, 90%);
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color:derive(black, 70%);
+    -fx-background-insets: 0, 0, 0;
+}
+
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+
+    -fx-background-color:transparent;
+    -fx-background-radius: 0em;
+    -fx-padding:0 10 0 0;
+
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding:0;
+}
+
+
+.track  {
+    -fx-background-color:transparent;
+}
+.scroll-pane:focused {
+    -fx-focus-color: transparent;
+}
+
+.check-circle {
+    -fx-background-color: white;
+    -fx-border-color: #7f7f7f;
+    -fx-border-width: 1px;
+    -fx-border-radius: 50%;
+}
+.check-circle:active {
+    -fx-background-image: url("../images/custom_images/check_white.png");
+    -fx-background-color: #8d6868;
+    -fx-background-size: 12px;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-radius: 50%;
+    -fx-border-color: transparent;
+}
+.invite-container {
+    -fx-padding: 10px;
+}
+.invite-container:hover {
+    -fx-background-color: #F5F5F5;
+}
+.invite-pill {
+    -fx-background-color: #8d6868;
+    -fx-background-radius: 15px;
+    -fx-padding: 2px 10px;
+}
+.invite-pill .label {
+    -fx-text-fill: white;
+}
+.invite-pill-remover {
+    -fx-background-image: url("../images/custom_images/times.png");
+    -fx-background-size: 8px;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 0 0 0 10px;
+}
+#invitedFriends {
+    -fx-padding: 10px 10px 0 10px;
+}
+#btns {
+    -fx-padding: 0 10px 10px 10px;
+}
+#inviteHeader {
+    -fx-padding: 10px;
+}

@@ -32,8 +32,10 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smackx.bookmarks.BookmarkedConference;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.mam.MamManager;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import javax.swing.text.html.parser.Entity;
 import java.io.ByteArrayInputStream;
@@ -394,65 +396,34 @@ public class FXMLController {
                 });
                 friendInfo.getChildren().addAll(friendAvatarContainer, friendName);
                 //friendInfoContainer.getChildren().add(friendInfo);
-                if (!isCurrentUser) {
-                    friendInfo.setOnMouseClicked((MouseEvent m) -> {
-                        if (m.getButton().equals(MouseButton.PRIMARY)) {
-                            if (m.getClickCount() == 1) {
-                                if (currentlySelectedFriend != null) {
-                                    currentlySelectedFriend.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), false);
-                                }
-                                currentlySelectedFriend = friendInfo;
-                                friendInfo.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), true);
-                            } else if (m.getClickCount() == 2) {
-                                try {
-                                    FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/chatroom.fxml"));
-                                    Parent chatRoot = chatLoader.load();
-                                    Scene chatScene = new Scene(chatRoot, 380, 620);
-                                    Stage chatStage = new Stage();
-                                    ((ChatController) chatLoader.getController()).setupChat(chatStage, chatScene, friendVCard, connection, friend);
-                                    chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/titlebar.css").toExternalForm());
-                                    chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/chatroom.css").toExternalForm());
-                                    chatScene.setFill(Color.TRANSPARENT);
-                                    chatStage.initStyle(StageStyle.TRANSPARENT);
-                                    chatStage.setScene(chatScene);
-                                    chatStage.show();
-                                } catch (Exception e) {
-                                    System.out.println("HI");
-                                    e.printStackTrace();
-                                }
+                friendInfo.setOnMouseClicked((MouseEvent m) -> {
+                    if(m.getButton().equals(MouseButton.PRIMARY)){
+                        if (m.getClickCount() == 1) {
+                            if (currentlySelectedFriend != null) {
+                                currentlySelectedFriend.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), false);
+                            }
+                            currentlySelectedFriend = friendInfo;
+                            friendInfo.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), true);
+                        } else if (m.getClickCount() == 2) {
+                            try {
+                                FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/chatroom.fxml"));
+                                Parent chatRoot = chatLoader.load();
+                                Scene chatScene = new Scene(chatRoot, 380, 620);
+                                Stage chatStage = new Stage();
+                                ((ChatController) chatLoader.getController()).setupChat(chatStage, chatScene, friendVCard, connection, friend);
+                                chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/titlebar.css").toExternalForm());
+                                chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/chatroom.css").toExternalForm());
+                                chatScene.setFill(Color.TRANSPARENT);
+                                chatStage.initStyle(StageStyle.TRANSPARENT);
+                                chatStage.setScene(chatScene);
+                                chatStage.show();
+                            } catch (Exception e) {
+                                System.out.println("HI");
+                                e.printStackTrace();
                             }
                         }
-                    });
-                } else {
-                    friendInfo.setOnMouseClicked((MouseEvent m) -> {
-                        if (m.getButton().equals(MouseButton.PRIMARY)) {
-                            if (m.getClickCount() == 1) {
-                                if (currentlySelectedFriend != null) {
-                                    currentlySelectedFriend.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), false);
-                                }
-                                currentlySelectedFriend = friendInfo;
-                                friendInfo.pseudoClassStateChanged(PseudoClass.getPseudoClass("friend-selected"), true);
-                            } else if (m.getClickCount() == 2) {
-                                try {
-                                    FXMLLoader chatLoader = new FXMLLoader(getClass().getResource("/org/openjfx/fxml/chatroom.fxml"));
-                                    Parent chatRoot = chatLoader.load();
-                                    Scene chatScene = new Scene(chatRoot, 380, 620);
-                                    Stage chatStage = new Stage();
-                                    ((ChatController) chatLoader.getController()).setupChat(chatStage, chatScene, null, connection, null);
-                                    chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/titlebar.css").toExternalForm());
-                                    chatScene.getStylesheets().add(getClass().getResource("/org/openjfx/css/chatroom.css").toExternalForm());
-                                    chatScene.setFill(Color.TRANSPARENT);
-                                    chatStage.initStyle(StageStyle.TRANSPARENT);
-                                    chatStage.setScene(chatScene);
-                                    chatStage.show();
-                                } catch (Exception e) {
-                                    System.out.println("HI");
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    });
-                }
+                    }
+                });
                 friendsList.getChildren().add(friendInfo);
                 // Creates the Friends label and subtitle only once (after user's profile)
                 if (isCurrentUser) {
@@ -497,11 +468,31 @@ public class FXMLController {
         try {
             List<BookmarkedConference> l = connection.getGroupChats();
             System.out.println(l.size());
+            VBox friendsList = new VBox();
             for (BookmarkedConference i : l) {
                 EntityBareJid groupChatJid = i.getJid();
                 System.out.println(groupChatJid.toString());
                 System.out.println(connection.getMucManager().getRoomInfo(groupChatJid).getName());
+                System.out.println(connection.getLastMessage(connection.getMucManager().getMultiUserChat(groupChatJid)));
+                //System.out.println(connection.getMucManager().getMultiUserChat(groupChatJid).nextMessage().getBody());
+
+                HBox friendInfo = new HBox();
+                friendInfo.setAlignment(Pos.CENTER_LEFT);
+                friendInfo.setSpacing(10);
+                friendInfo.getStyleClass().add("friend-container");
+                Label friendName = new Label(connection.getMucManager().getRoomInfo(groupChatJid).getName());
+                friendName.getStyleClass().add("friend-name");
+                Label lastMessageText = new Label(connection.getLastMessage(connection.getMucManager().getMultiUserChat(groupChatJid)));
+                Circle friendAvatar = new Circle();
+                //friendAvatar.setFill(new ImagePattern(new Image(new ByteArrayInputStream(friendVCard.getAvatar()))));
+                friendAvatar.setRadius(25);
+                BorderPane friendAvatarContainer = new BorderPane(friendAvatar);
+                friendAvatarContainer.getStyleClass().add("friend-avatar");
+                friendInfo.getChildren().addAll(friendAvatarContainer, new VBox(friendName, lastMessageText));
+                //friendInfoContainer.getChildren().add(friendInfo);
+                friendsList.getChildren().add(friendInfo);
             }
+            view.getChildren().add(friendsList);
         } catch (Exception e) {
             e.printStackTrace();
         }

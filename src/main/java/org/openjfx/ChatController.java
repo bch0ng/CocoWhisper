@@ -193,6 +193,7 @@ public class ChatController {
                             muc.destroy("Left", null);
                         }
                         muc.leave();
+                        connection.removeLastMessageChat(muc);
                         stage.close();
                         System.out.println("Left!");
                     } catch (Exception e) {
@@ -205,6 +206,7 @@ public class ChatController {
                 chatBtns.getChildren().addAll(invite, leave);
             }
             muc.addMessageListener((Message msg) -> {
+                connection.addLastMessage(muc, msg.getBody());
                 HBox messageContainer = new HBox();
                 messageContainer.setSpacing(10);
                 Text messageText = new Text(msg.getBody());
@@ -214,7 +216,7 @@ public class ChatController {
                     messageText.getStyleClass().add("user-message-text");
                     messageBody.getStyleClass().add("user-message-body");
                     //messageBody.pseudoClassStateChanged(PseudoClass.getPseudoClass("pending"), true);
-                    messageBody.setId(msg.getStanzaId());
+                    //messageBody.setId(msg.getStanzaId());
                     messageContainer.getChildren().add(messageBody);
                 } else {
                     messageContainer.setAlignment(Pos.TOP_LEFT);
@@ -291,9 +293,8 @@ public class ChatController {
                 msg = new Message(connection.getLoggedInUserJid().asBareJid());
             }
 
-            String msgID = Integer.toString(msg.hashCode());
-            System.out.println(msgID);
-            msg.setStanzaId(msgID);
+            //String msgID = Integer.toString(msg.hashCode());
+            //msg.setStanzaId(msgID);
             msg.setFrom(connection.getLoggedInUserJid());
             msg.setBody(msgBody);
             msg.setType(Message.Type.chat);

@@ -28,6 +28,7 @@ import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
+import org.jivesoftware.smackx.pubsub.PubSubManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
@@ -57,6 +58,7 @@ public class ChattyXMPPConnection
     private String userName;
     private BookmarkManager bookManager;
     private PrivateDataManager pdManager;
+    private HashMap<MultiUserChat, String> lastMessage;
 
     public ChattyXMPPConnection(String username, String password) throws Exception
     {
@@ -73,6 +75,7 @@ public class ChattyXMPPConnection
     {
         // Loading in the project's environmental variables from .env file
         dotenv = Dotenv.load();
+        lastMessage = new HashMap<>();
         // Setting the config options for connection to server
         XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
                 .setXmppDomain(dotenv.get("XMPP_DOMAIN"))
@@ -128,6 +131,7 @@ public class ChattyXMPPConnection
             // attributes.put("Name", name);
             // Put attributes as 3rd parameter (after password)
             accManager.createAccount(Localpart.from(username), password);
+            lastMessage = new HashMap<>();
             try {
                 connection.login(username, password);
                 userVCard = vcManager.loadVCard(userJid);
@@ -300,6 +304,28 @@ public class ChattyXMPPConnection
 
     public BookmarkManager getBookmarkManager() {
         return bookManager;
+    }
+
+    public void addLastMessage(MultiUserChat muc, String message) {
+        if (lastMessage.containsKey(muc)) {
+            lastMessage.replace(muc, message);
+        } else {
+            lastMessage.put(muc, message);
+        }
+    }
+
+    public String getLastMessage(MultiUserChat muc) {
+        if (lastMessage.containsKey(muc)) {
+            return lastMessage.get(muc);
+        }
+        return "";
+    }
+
+    public String removeLastMessageChat(MultiUserChat muc) {
+        if (lastMessage.containsKey(muc)) {
+            return lastMessage.remove(muc);
+        }
+        return "Chatroom not found!";
     }
 
     public void disconnect()
